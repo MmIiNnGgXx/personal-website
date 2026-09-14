@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Search Dashboard</title>
+    <style>
+      :root {
+        --bg: #f5f6f8;
+        --panel: #ffffff;
+        --text: #18212f;
+        --muted: #667085;
+        --line: #d9dee7;
+        --accent: #2563eb;
+        --ok: #0f766e;
+        --warn: #b45309;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--text); }
+      .shell { width: min(1240px, calc(100% - 32px)); margin: 0 auto; }
+      header { padding: 28px 0 18px; border-bottom: 1px solid var(--line); }
+      h1 { margin: 0; font-size: clamp(34px, 6vw, 64px); line-height: 1; letter-spacing: 0; }
+      .lead { max-width: 760px; color: var(--muted); font-size: 17px; line-height: 1.7; }
+      .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding: 22px 0; }
+      .stat, .panel, .job { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+      .stat { padding: 16px; }
+      .stat span { color: var(--muted); font-size: 13px; }
+      .stat strong { display: block; margin-top: 8px; font-size: 28px; }
+      .layout { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 16px; padding-bottom: 40px; }
+      .panel { padding: 16px; }
+      form { display: grid; gap: 10px; }
+      label { display: grid; gap: 6px; color: var(--muted); font-size: 13px; font-weight: 700; }
+      input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 10px; font: inherit; background: #fff; color: var(--text); }
+      textarea { min-height: 72px; resize: vertical; }
+      button { min-height: 40px; border: 0; border-radius: 6px; padding: 0 14px; background: var(--accent); color: #fff; font-weight: 750; cursor: pointer; }
+      .board { display: grid; grid-template-columns: repeat(5, minmax(180px, 1fr)); gap: 12px; overflow-x: auto; padding-bottom: 4px; }
+      .column { min-width: 180px; display: grid; align-content: start; gap: 10px; }
+      .column h2 { margin: 0; font-size: 15px; }
+      .job { padding: 12px; display: grid; gap: 10px; }
+      .job h3 { margin: 0; font-size: 15px; }
+      .job p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+      .move { display: flex; gap: 8px; }
+      .move button { flex: 1; min-height: 32px; background: #eef2ff; color: #174ea6; }
+      @media (max-width: 980px) { .layout, .stats { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <h1>Job Search Dashboard</h1>
+        <p class="lead">一个求职投递工作台：职位、阶段、面试、跟进动作和统计数据放在同一个界面里，帮助求职者减少遗漏。</p>
+      </header>
+
+      <section class="stats" aria-label="Application stats">
+        <div class="stat"><span>Applications</span><strong id="total">0</strong></div>
+        <div class="stat"><span>Interviews</span><strong id="interviews">0</strong></div>
+        <div class="stat"><span>Offers</span><strong id="offers">0</strong></div>
+        <div class="stat"><span>Response Rate</span><strong id="rate">0%</strong></div>
+      </section>
+
+      <main class="layout">
+        <aside class="panel">
+          <h2>Add Application</h2>
+          <form id="form">
+            <label>Company <input id="company" required value="Example AI" /></label>
+            <label>Role <input id="role" required value="Frontend Engineer" /></label>
+            <label>Status
+              <select id="status">
+                <option>Saved</option>
+                <option>Applied</option>
+                <option>Interview</option>
+                <option>Offer</option>
+                <option>Rejected</option>
+              </select>
+            </label>
+            <label>Next Action <input id="next" value="Follow up this Friday" /></label>
+            <label>Notes <textarea id="notes">Portfolio and AI product experience are relevant.</textarea></label>
+            <button>Add Job</button>
+          </form>
+        </aside>
+
+        <section class="board" id="board" aria-label="Application board"></section>
+      </main>
+    </div>
+
+    <script>
+      const columns = ["Saved", "Applied", "Interview", "Offer", "Rejected"];
+      const seed = [
+        { company: "Northstar Labs", role: "AI Product Engineer", status: "Applied", next: "Send portfolio link", notes: "Highlight AI Resume Reviewer." },
+        { company: "MetricFlow", role: "Frontend Dashboard Engineer", status: "Interview", next: "Prepare dashboard case study", notes: "Analytics project is a strong match." }
+      ];
+      let jobs = JSON.parse(localStorage.getItem("jobs") || "null") || seed;
+
+      function save() {
+        localStorage.setItem("jobs", JSON.stringify(jobs));
+      }
+
+      function render() {
+        document.querySelector("#board").innerHTML = columns.map((column) => {
+          const items = jobs.filter((job) => job.status === column);
+          return `<div class="column"><h2>${column} · ${items.length}</h2>${items.map(card).join("")}</div>`;
+        }).join("");
+
+        document.querySelector("#total").textContent = jobs.length;
+        document.querySelector("#interviews").textContent = jobs.filter((job) => job.status === "Interview").length;
+        document.querySelector("#offers").textContent = jobs.filter((job) => job.status === "Offer").length;
+        const responses = jobs.filter((job) => ["Interview", "Offer", "Rejected"].includes(job.status)).length;
+        document.querySelector("#rate").textContent = jobs.length ? `${Math.round((responses / jobs.length) * 100)}%` : "0%";
+      }
+
+      function card(job, index) {
+        const realIndex = jobs.indexOf(job);
+        return `<article class="job">
+          <div>
+            <h3>${job.company}</h3>
+            <p>${job.role}</p>
+          </div>
+          <p><strong>Next:</strong> ${job.next || "No action set"}</p>
+          <p>${job.notes || ""}</p>
+          <div class="move">
+            <button type="button" onclick="move(${realIndex}, -1)">←</button>
+            <button type="button" onclick="move(${realIndex}, 1)">→</button>
+          </div>
+        </article>`;
+      }
+
+      function move(index, direction) {
+        const current = columns.indexOf(jobs[index].status);
+        const next = Math.max(0, Math.min(columns.length - 1, current + direction));
+        jobs[index].status = columns[next];
+        save();
+        render();
+      }
+
+      document.querySelector("#form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        jobs.unshift({
+          company: document.querySelector("#company").value,
+          role: document.querySelector("#role").value,
+          status: document.querySelector("#status").value,
+          next: document.querySelector("#next").value,
+          notes: document.querySelector("#notes").value
+        });
+        save();
+        render();
+      });
+
+      render();
+    </script>
+  </body>
+</html>
