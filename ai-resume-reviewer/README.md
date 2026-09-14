@@ -1,30 +1,38 @@
-# AI Resume Reviewer
+# AI 简历与作品集诊断台
 
-AI Resume Reviewer compares a resume with a target job description and turns the gap into concrete edits.
+面向中文求职场景的简历、岗位 JD 和作品集匹配工具。它把岗位要求拆成能力维度，再输出关键词缺口、作品集改造建议和可直接写进简历的表达。
 
-## MVP
+## 核心功能
 
-- Paste resume text
-- Paste job description
-- Generate a role-fit score
-- Show matched and missing keywords
-- Suggest rewrite actions
-- Save the latest analysis in `localStorage`
+- 选择目标岗位：前端、AI 应用、产品型前端、数据可视化
+- 粘贴简历/项目描述和目标 JD
+- 计算岗位匹配分和关键词覆盖率
+- 按能力维度诊断：前端工程、产品/UI、数据与后台、AI 应用、交付能力
+- 输出已命中能力和缺口关键词
+- 生成作品集改造建议
+- 生成中文简历改写示例
+- 保存最近 5 次分析历史
+- 导出 Markdown 诊断报告
 
-## Tech
+## 技术栈
 
 - HTML
 - CSS
 - JavaScript
+- localStorage
 - GitHub Pages
 
-## Why This Exists
+## 作品集亮点
 
-This project is intentionally small: it proves product thinking and AI-career workflow design before adding accounts, databases, or paid AI calls.
+- 不依赖后端即可完成完整产品闭环
+- 用规则引擎模拟 AI 产品的第一版能力
+- 面向真实中文求职流程，而不是通用英文模板
+- 展示了信息架构、评分逻辑、状态反馈、导出和历史记录
 
-## Next
+## 后续迭代
 
-- Add PDF parsing
-- Add project portfolio URL review
-- Add optional AI rewrite suggestions
-- Add exportable report
+- 接入 PDF 解析
+- 接入真实 AI 改写能力
+- 支持作品集 URL 自动诊断
+- 增加岗位模板库
+- 增加更细的量化评分解释
