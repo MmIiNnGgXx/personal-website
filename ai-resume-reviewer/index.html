@@ -3,140 +3,252 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Resume Reviewer</title>
+    <title>AI 简历与作品集诊断台</title>
     <style>
       :root {
-        --bg: #f6f7f9;
+        --bg: #f5f6f8;
         --panel: #ffffff;
-        --text: #17202a;
+        --ink: #17202a;
         --muted: #667085;
         --line: #d9dee7;
-        --accent: #2563eb;
-        --good: #0f766e;
-        --warn: #b45309;
-        --bad: #b42318;
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --blue: #2563eb;
+        --green: #0f766e;
+        --amber: #b45309;
+        --red: #b42318;
+        font-family: Inter, "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
       }
-
       * { box-sizing: border-box; }
-      body { margin: 0; background: var(--bg); color: var(--text); }
-      .shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
-      header { padding: 28px 0 18px; border-bottom: 1px solid var(--line); }
-      h1 { margin: 0; font-size: clamp(34px, 6vw, 64px); line-height: 1; letter-spacing: 0; }
-      .lead { max-width: 720px; color: var(--muted); font-size: 17px; line-height: 1.7; }
-      main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 18px; padding: 28px 0 40px; }
-      .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px; }
-      .inputs { display: grid; gap: 14px; }
-      label { display: grid; gap: 8px; font-weight: 700; }
-      textarea, input { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 12px; font: inherit; background: #fff; color: var(--text); }
-      textarea { min-height: 210px; resize: vertical; line-height: 1.5; }
-      button { min-height: 42px; border: 0; border-radius: 6px; padding: 0 16px; background: var(--accent); color: #fff; font-weight: 750; cursor: pointer; }
-      .score { display: grid; gap: 8px; margin-bottom: 18px; }
-      .score strong { font-size: 48px; line-height: 1; }
-      .bar { height: 10px; overflow: hidden; border-radius: 999px; background: #e8edf5; }
-      .bar span { display: block; height: 100%; width: 0%; background: var(--accent); transition: width .2s ease; }
-      h2 { margin: 0 0 12px; font-size: 19px; }
+      body { margin: 0; background: var(--bg); color: var(--ink); }
+      .shell { width: min(1280px, calc(100% - 32px)); margin: 0 auto; }
+      header { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; padding: 28px 0 22px; border-bottom: 1px solid var(--line); }
+      h1 { margin: 0; font-size: clamp(34px, 6vw, 68px); line-height: 1; letter-spacing: 0; }
+      .lead { max-width: 760px; color: var(--muted); font-size: 17px; line-height: 1.7; }
+      .brief, .panel, .metric, .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+      .brief { padding: 18px; display: grid; gap: 12px; align-content: start; }
+      .brief-row { display: flex; justify-content: space-between; gap: 16px; font-size: 14px; }
+      .brief-row span { color: var(--muted); }
+      main { display: grid; grid-template-columns: 420px minmax(0, 1fr); gap: 16px; padding: 22px 0 40px; }
+      .panel { padding: 18px; }
+      .form { display: grid; gap: 14px; position: sticky; top: 16px; }
+      label { display: grid; gap: 7px; color: var(--muted); font-size: 13px; font-weight: 750; }
+      select, textarea, input { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 11px; background: #fff; color: var(--ink); font: inherit; }
+      textarea { min-height: 170px; resize: vertical; line-height: 1.55; }
+      button { min-height: 42px; border: 0; border-radius: 6px; padding: 0 14px; background: var(--blue); color: #fff; font-weight: 800; cursor: pointer; }
+      .ghost { background: #eef2ff; color: #174ea6; }
+      .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+      .metric { padding: 16px; }
+      .metric span { display: block; color: var(--muted); font-size: 13px; }
+      .metric strong { display: block; margin-top: 8px; font-size: 32px; line-height: 1; }
+      h2 { margin: 0 0 14px; font-size: 19px; }
+      h3 { margin: 0 0 8px; font-size: 16px; }
+      .stack { display: grid; gap: 16px; }
+      .bars { display: grid; gap: 10px; }
+      .bar-row { display: grid; gap: 6px; }
+      .bar-label { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 13px; }
+      .bar { height: 10px; background: #edf1f7; border-radius: 999px; overflow: hidden; }
+      .bar span { display: block; height: 100%; width: 0%; background: var(--blue); transition: width .2s ease; }
+      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .card { padding: 15px; }
       .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-      .chip { padding: 6px 9px; border-radius: 999px; background: #e7efff; color: #174ea6; font-size: 12px; font-weight: 700; }
-      .chip.missing { background: #fff7ed; color: var(--warn); }
-      .list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
-      .list li { padding: 10px 0; border-bottom: 1px solid var(--line); color: var(--muted); line-height: 1.5; }
-      .status { font-weight: 750; color: var(--good); }
-      @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+      .chip { padding: 6px 9px; border-radius: 999px; background: #e7efff; color: #174ea6; font-size: 12px; font-weight: 750; }
+      .chip.warn { background: #fff7ed; color: var(--amber); }
+      .chip.good { background: #e7f8f5; color: var(--green); }
+      .list { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+      .list li { padding: 11px 0; border-bottom: 1px solid var(--line); color: var(--muted); line-height: 1.55; }
+      .list strong { color: var(--ink); }
+      .history { display: grid; gap: 8px; }
+      .history button { width: 100%; background: #fff; color: var(--ink); border: 1px solid var(--line); text-align: left; padding: 10px; height: auto; }
+      .status-good { color: var(--green); }
+      .status-mid { color: var(--amber); }
+      .status-low { color: var(--red); }
+      @media (max-width: 980px) {
+        header, main, .grid, .metrics { grid-template-columns: 1fr; }
+        .form { position: static; }
+      }
     </style>
   </head>
   <body>
     <div class="shell">
       <header>
-        <h1>AI Resume Reviewer</h1>
-        <p class="lead">一个面向求职者的简历和岗位 JD 匹配分析工具。MVP 先用本地规则计算匹配分、关键词覆盖和可执行修改建议，后续可接入 AI 优化表达。</p>
+        <div>
+          <h1>AI 简历与作品集诊断台</h1>
+          <p class="lead">面向中文求职场景的简历/JD/作品集匹配工具。它不只是算关键词，而是把岗位要求拆成能力维度，再给出项目级改造建议和可直接写进简历的表达。</p>
+        </div>
+        <aside class="brief" aria-label="项目说明">
+          <div class="brief-row"><span>定位</span><strong>求职效率产品</strong></div>
+          <div class="brief-row"><span>适用岗位</span><strong>前端 / AI 应用 / 产品工程</strong></div>
+          <div class="brief-row"><span>MVP 能力</span><strong>诊断 + 建议 + 导出</strong></div>
+          <div class="brief-row"><span>数据方式</span><strong>浏览器本地处理</strong></div>
+        </aside>
       </header>
 
       <main>
-        <section class="panel inputs" aria-label="Resume analysis form">
-          <label>
-            Target Role
-            <input id="role" value="Frontend Engineer / AI Product Engineer" />
+        <aside class="panel form">
+          <label>目标岗位
+            <select id="role">
+              <option>前端开发工程师</option>
+              <option>AI 应用开发工程师</option>
+              <option>产品型前端工程师</option>
+              <option>数据可视化工程师</option>
+            </select>
           </label>
-          <label>
-            Resume
-            <textarea id="resume">Frontend developer with React, TypeScript, Next.js and Tailwind CSS experience. Built dashboards, portfolio pages, forms, charts, and AI-assisted workflows. Familiar with GitHub, Vercel, responsive UI, accessibility, and product thinking.</textarea>
+          <label>你的简历/项目描述
+            <textarea id="resume">熟悉 React、TypeScript、Next.js、Tailwind CSS，做过作品集网站、数据看板、表单、响应式页面和 AI 辅助工作流。了解 GitHub、Vercel、可访问性、产品思维和前端工程化。</textarea>
           </label>
-          <label>
-            Job Description
-            <textarea id="jd">We are looking for a frontend engineer with React, TypeScript, Next.js, dashboard experience, strong UI taste, accessibility awareness, API integration, and ability to build AI product prototypes.</textarea>
+          <label>目标岗位 JD
+            <textarea id="jd">负责前端产品开发，要求 React、TypeScript、Next.js、数据看板、表格表单、接口联调、组件化、性能优化、良好的 UI 审美、可访问性意识，能快速完成 AI 产品原型。</textarea>
           </label>
-          <button id="analyze">Analyze Resume</button>
-        </section>
-
-        <aside class="panel" aria-live="polite">
-          <div class="score">
-            <span class="status" id="status">Ready</span>
-            <strong id="score">0</strong>
-            <div class="bar"><span id="bar"></span></div>
+          <div class="actions">
+            <button id="analyze">重新分析</button>
+            <button class="ghost" id="export">导出报告</button>
           </div>
-
-          <h2>Matched Keywords</h2>
-          <div class="chips" id="matched"></div>
-
-          <h2 style="margin-top: 22px;">Missing Keywords</h2>
-          <div class="chips" id="missing"></div>
-
-          <h2 style="margin-top: 22px;">Rewrite Actions</h2>
-          <ul class="list" id="actions"></ul>
         </aside>
+
+        <section class="stack">
+          <section class="metrics" aria-label="诊断指标">
+            <article class="metric"><span>岗位匹配分</span><strong id="score">0</strong></article>
+            <article class="metric"><span>关键词覆盖</span><strong id="coverage">0/0</strong></article>
+            <article class="metric"><span>优先修改项</span><strong id="todoCount">0</strong></article>
+          </section>
+
+          <section class="panel">
+            <h2>能力维度诊断</h2>
+            <div class="bars" id="dimensions"></div>
+          </section>
+
+          <section class="grid">
+            <article class="card">
+              <h2>已命中能力</h2>
+              <div class="chips" id="matched"></div>
+            </article>
+            <article class="card">
+              <h2>缺口关键词</h2>
+              <div class="chips" id="missing"></div>
+            </article>
+          </section>
+
+          <section class="grid">
+            <article class="card">
+              <h2>作品集改造建议</h2>
+              <ul class="list" id="portfolioAdvice"></ul>
+            </article>
+            <article class="card">
+              <h2>简历改写示例</h2>
+              <ul class="list" id="rewriteAdvice"></ul>
+            </article>
+          </section>
+
+          <section class="panel">
+            <h2>分析历史</h2>
+            <div class="history" id="history"></div>
+          </section>
+        </section>
       </main>
     </div>
 
     <script>
-      const keywords = [
-        "react", "typescript", "next.js", "tailwind", "dashboard", "ui",
-        "accessibility", "api", "ai", "product", "github", "vercel",
-        "forms", "charts", "responsive"
-      ];
+      const dimensions = {
+        "前端工程": ["react", "typescript", "next.js", "组件", "工程化", "性能"],
+        "产品/UI": ["ui", "审美", "可访问性", "响应式", "交互", "用户"],
+        "数据与后台": ["数据", "看板", "表格", "表单", "指标", "筛选"],
+        "AI 应用": ["ai", "模型", "prompt", "原型", "自动化", "智能"],
+        "交付能力": ["github", "vercel", "部署", "文档", "测试", "联调"]
+      };
+      const allKeywords = [...new Set(Object.values(dimensions).flat())];
 
-      function includes(text, word) {
+      function has(text, word) {
         return text.toLowerCase().includes(word.toLowerCase());
       }
 
       function analyze() {
+        const role = document.querySelector("#role").value;
         const resume = document.querySelector("#resume").value;
         const jd = document.querySelector("#jd").value;
-        const required = keywords.filter((word) => includes(jd, word));
-        const matched = required.filter((word) => includes(resume, word));
-        const missing = required.filter((word) => !includes(resume, word));
+        const required = allKeywords.filter((word) => has(jd, word));
+        const matched = required.filter((word) => has(resume, word));
+        const missing = required.filter((word) => !has(resume, word));
         const score = required.length ? Math.round((matched.length / required.length) * 100) : 0;
+        const result = { role, score, matched, missing, at: new Date().toLocaleString("zh-CN") };
 
         document.querySelector("#score").textContent = score;
-        document.querySelector("#bar").style.width = `${score}%`;
-        document.querySelector("#status").textContent = score >= 75 ? "Strong match" : score >= 50 ? "Needs targeted edits" : "Needs repositioning";
-        renderChips("#matched", matched, "");
-        renderChips("#missing", missing, "missing");
-        renderActions(missing);
-
-        localStorage.setItem("resume-review:last", JSON.stringify({ resume, jd, score, at: new Date().toISOString() }));
+        document.querySelector("#score").className = score >= 75 ? "status-good" : score >= 50 ? "status-mid" : "status-low";
+        document.querySelector("#coverage").textContent = `${matched.length}/${required.length}`;
+        document.querySelector("#todoCount").textContent = Math.max(3, missing.length);
+        renderDimensions(resume, jd);
+        renderChips("#matched", matched, "good");
+        renderChips("#missing", missing, "warn");
+        renderPortfolioAdvice(missing);
+        renderRewriteAdvice(role, missing);
+        saveHistory(result);
+        renderHistory();
       }
 
-      function renderChips(selector, items, extraClass) {
-        const target = document.querySelector(selector);
-        target.innerHTML = items.length
-          ? items.map((item) => `<span class="chip ${extraClass}">${item}</span>`).join("")
-          : '<span class="chip missing">No items</span>';
+      function renderDimensions(resume, jd) {
+        document.querySelector("#dimensions").innerHTML = Object.entries(dimensions).map(([name, words]) => {
+          const required = words.filter((word) => has(jd, word));
+          const matched = required.filter((word) => has(resume, word));
+          const pct = required.length ? Math.round((matched.length / required.length) * 100) : 70;
+          return `<div class="bar-row">
+            <div class="bar-label"><span>${name}</span><strong>${pct}%</strong></div>
+            <div class="bar"><span style="width:${pct}%"></span></div>
+          </div>`;
+        }).join("");
       }
 
-      function renderActions(missing) {
-        const base = [
-          "把项目描述改成结果导向：动作 + 技术 + 可量化影响。",
-          "在 Projects 区域补充 Demo、源码、截图和你负责的设计取舍。",
-          "简历顶部用 2-3 行说明目标岗位和核心能力，不要只堆技术名词。"
+      function renderChips(selector, items, cls) {
+        document.querySelector(selector).innerHTML = items.length
+          ? items.map((item) => `<span class="chip ${cls}">${item}</span>`).join("")
+          : '<span class="chip warn">暂无</span>';
+      }
+
+      function renderPortfolioAdvice(missing) {
+        const advice = [
+          ["补项目证据", `把 ${missing.slice(0, 3).join(" / ") || "核心能力"} 做成项目截图、Demo 链接和 README 亮点。`],
+          ["补业务闭环", "每个作品至少包含输入、处理、结果、空状态和错误/边界状态。"],
+          ["补中文叙事", "README 第一屏用中文说明用户是谁、痛点是什么、你解决了什么。"],
+          ["补可量化成果", "项目描述改成：做了什么 + 技术方案 + 体验/效率提升。"]
         ];
-        const targeted = missing.slice(0, 5).map((word) => `补充和 ${word} 相关的真实项目证据。`);
-        document.querySelector("#actions").innerHTML = [...targeted, ...base]
-          .map((item) => `<li>${item}</li>`)
-          .join("");
+        document.querySelector("#portfolioAdvice").innerHTML = advice.map(([title, body]) => `<li><strong>${title}</strong><br>${body}</li>`).join("");
+      }
+
+      function renderRewriteAdvice(role, missing) {
+        const examples = [
+          `面向${role}岗位，独立设计并实现求职作品集矩阵，覆盖 AI 分析、投递看板、数据看板和 CMS 后台。`,
+          `使用 React/TypeScript 思维拆解复杂页面状态，完成表单、筛选、指标卡、响应式布局和本地数据持久化。`,
+          `针对岗位关键词缺口 ${missing.slice(0, 4).join("、") || "较少"}，补充项目证据和可访问 Demo。`
+        ];
+        document.querySelector("#rewriteAdvice").innerHTML = examples.map((item) => `<li>${item}</li>`).join("");
+      }
+
+      function saveHistory(result) {
+        const history = JSON.parse(localStorage.getItem("resume-review-history") || "[]");
+        history.unshift(result);
+        localStorage.setItem("resume-review-history", JSON.stringify(history.slice(0, 5)));
+      }
+
+      function renderHistory() {
+        const history = JSON.parse(localStorage.getItem("resume-review-history") || "[]");
+        document.querySelector("#history").innerHTML = history.length
+          ? history.map((item) => `<button type="button">${item.at} · ${item.role} · ${item.score} 分 · 缺口 ${item.missing.length} 项</button>`).join("")
+          : "<span class=\"chip warn\">暂无历史</span>";
+      }
+
+      function exportReport() {
+        const score = document.querySelector("#score").textContent;
+        const missing = [...document.querySelectorAll("#missing .chip")].map((chip) => chip.textContent).join("、");
+        const report = `# 简历与作品集诊断报告\n\n匹配分：${score}\n\n缺口关键词：${missing}\n\n建议：补充中文项目叙事、可访问 Demo、截图、README 亮点和岗位相关技术证据。\n`;
+        const blob = new Blob([report], { type: "text/markdown;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "resume-portfolio-report.md";
+        a.click();
+        URL.revokeObjectURL(url);
       }
 
       document.querySelector("#analyze").addEventListener("click", analyze);
+      document.querySelector("#export").addEventListener("click", exportReport);
       analyze();
     </script>
   </body>
