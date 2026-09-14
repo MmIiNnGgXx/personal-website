@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Commerce CMS Dashboard</title>
+    <style>
+      :root {
+        --bg: #f6f7f9;
+        --panel: #ffffff;
+        --text: #17202a;
+        --muted: #667085;
+        --line: #d9dee7;
+        --accent: #2563eb;
+        --green: #0f766e;
+        --amber: #b45309;
+        --red: #b42318;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--text); }
+      .shell { width: min(1240px, calc(100% - 32px)); margin: 0 auto; }
+      header { display: flex; justify-content: space-between; gap: 20px; padding: 28px 0 18px; border-bottom: 1px solid var(--line); }
+      h1 { margin: 0; font-size: clamp(34px, 6vw, 64px); line-height: 1; letter-spacing: 0; }
+      .lead { max-width: 720px; color: var(--muted); font-size: 17px; line-height: 1.7; }
+      .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: start; }
+      button, input, select { min-height: 38px; border: 1px solid var(--line); border-radius: 6px; padding: 0 12px; background: #fff; color: var(--text); font: inherit; }
+      button { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 750; cursor: pointer; }
+      .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding: 22px 0; }
+      .card, .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+      .card { padding: 16px; }
+      .card span { color: var(--muted); font-size: 13px; }
+      .card strong { display: block; margin-top: 8px; font-size: 28px; line-height: 1; }
+      .layout { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 16px; padding-bottom: 40px; }
+      .panel { padding: 16px; }
+      h2 { margin: 0 0 14px; font-size: 18px; }
+      form { display: grid; gap: 10px; }
+      label { display: grid; gap: 6px; color: var(--muted); font-size: 13px; font-weight: 700; }
+      .table-wrap { overflow-x: auto; }
+      table { width: 100%; min-width: 760px; border-collapse: collapse; }
+      th, td { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: left; font-size: 14px; }
+      th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+      .badge { display: inline-flex; padding: 4px 8px; border-radius: 999px; background: #e7efff; color: #174ea6; font-size: 12px; font-weight: 750; }
+      .badge.good { background: #e7f8f5; color: var(--green); }
+      .badge.warn { background: #fff7ed; color: var(--amber); }
+      .badge.bad { background: #fff1f0; color: var(--red); }
+      .tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+      .tab { background: #fff; color: var(--text); border-color: var(--line); }
+      .tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+      @media (max-width: 920px) {
+        header, .layout { grid-template-columns: 1fr; }
+        header { flex-direction: column; }
+        .metrics { grid-template-columns: 1fr 1fr; }
+      }
+      @media (max-width: 560px) {
+        .metrics { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <div>
+          <h1>Commerce CMS Dashboard</h1>
+          <p class="lead">一个轻量业务后台，覆盖商品、订单、客户和设置入口，重点展示表格、表单、状态和运营信息架构。</p>
+        </div>
+        <div class="actions">
+          <select id="statusFilter" aria-label="Order status filter">
+            <option value="all">All orders</option>
+            <option value="Paid">Paid</option>
+            <option value="Packed">Packed</option>
+            <option value="Risk">Risk</option>
+          </select>
+          <button id="seed">Reset Demo</button>
+        </div>
+      </header>
+
+      <section class="metrics" aria-label="Store metrics">
+        <article class="card"><span>Revenue</span><strong id="revenue">$42.6k</strong></article>
+        <article class="card"><span>Orders</span><strong id="ordersCount">128</strong></article>
+        <article class="card"><span>Products</span><strong id="productsCount">6</strong></article>
+        <article class="card"><span>Low Stock</span><strong id="lowStock">2</strong></article>
+      </section>
+
+      <main class="layout">
+        <aside class="panel">
+          <h2>Add Product</h2>
+          <form id="productForm">
+            <label>Name <input id="name" required value="Everyday Tote" /></label>
+            <label>Category <input id="category" required value="Bags" /></label>
+            <label>Price <input id="price" required type="number" value="68" /></label>
+            <label>Stock <input id="stock" required type="number" value="24" /></label>
+            <button>Add Product</button>
+          </form>
+        </aside>
+
+        <section class="panel">
+          <div class="tabs" aria-label="Dashboard sections">
+            <button class="tab active" data-view="products">Products</button>
+            <button class="tab" data-view="orders">Orders</button>
+            <button class="tab" data-view="customers">Customers</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead id="head"></thead>
+              <tbody id="body"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const seedProducts = [
+        ["Desk Lamp", "Home", 48, 12],
+        ["Studio Chair", "Furniture", 189, 5],
+        ["Canvas Backpack", "Bags", 82, 31],
+        ["Notebook Set", "Stationery", 18, 64],
+        ["Ceramic Mug", "Kitchen", 22, 3],
+        ["Wireless Stand", "Tech", 54, 7]
+      ];
+      const orders = [
+        ["#1042", "Mia Chen", "$248", "Paid"],
+        ["#1041", "Leo Wang", "$68", "Packed"],
+        ["#1040", "Ava Lin", "$411", "Risk"],
+        ["#1039", "Noah Xu", "$126", "Paid"],
+        ["#1038", "Ivy Zhou", "$42", "Packed"]
+      ];
+      const customers = [
+        ["Mia Chen", "3 orders", "$620", "VIP"],
+        ["Leo Wang", "1 order", "$68", "New"],
+        ["Ava Lin", "6 orders", "$1,420", "Risk"],
+        ["Noah Xu", "2 orders", "$318", "Repeat"]
+      ];
+      let products = JSON.parse(localStorage.getItem("cms-products") || "null") || seedProducts;
+      let view = "products";
+
+      function badgeClass(value) {
+        return value === "Risk" ? "bad" : value === "Packed" || value === "New" ? "warn" : "good";
+      }
+
+      function render() {
+        document.querySelector("#productsCount").textContent = products.length;
+        document.querySelector("#lowStock").textContent = products.filter((p) => p[3] <= 7).length;
+        document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab.dataset.view === view));
+
+        if (view === "products") {
+          document.querySelector("#head").innerHTML = "<tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th></tr>";
+          document.querySelector("#body").innerHTML = products.map(([name, category, price, stock]) => `
+            <tr><td>${name}</td><td>${category}</td><td>$${price}</td><td>${stock}</td><td><span class="badge ${stock <= 7 ? "warn" : "good"}">${stock <= 7 ? "Low stock" : "Active"}</span></td></tr>
+          `).join("");
+        }
+
+        if (view === "orders") {
+          const filter = document.querySelector("#statusFilter").value;
+          const visible = filter === "all" ? orders : orders.filter((order) => order[3] === filter);
+          document.querySelector("#head").innerHTML = "<tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th></tr>";
+          document.querySelector("#body").innerHTML = visible.map(([id, customer, total, status]) => `
+            <tr><td>${id}</td><td>${customer}</td><td>${total}</td><td><span class="badge ${badgeClass(status)}">${status}</span></td></tr>
+          `).join("");
+        }
+
+        if (view === "customers") {
+          document.querySelector("#head").innerHTML = "<tr><th>Customer</th><th>Orders</th><th>Lifetime Value</th><th>Segment</th></tr>";
+          document.querySelector("#body").innerHTML = customers.map(([name, count, value, segment]) => `
+            <tr><td>${name}</td><td>${count}</td><td>${value}</td><td><span class="badge ${badgeClass(segment)}">${segment}</span></td></tr>
+          `).join("");
+        }
+      }
+
+      document.querySelector("#productForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        products.unshift([
+          document.querySelector("#name").value,
+          document.querySelector("#category").value,
+          Number(document.querySelector("#price").value),
+          Number(document.querySelector("#stock").value)
+        ]);
+        localStorage.setItem("cms-products", JSON.stringify(products));
+        view = "products";
+        render();
+      });
+
+      document.querySelector("#statusFilter").addEventListener("change", () => {
+        view = "orders";
+        render();
+      });
+      document.querySelector("#seed").addEventListener("click", () => {
+        products = seedProducts;
+        localStorage.setItem("cms-products", JSON.stringify(products));
+        render();
+      });
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          view = tab.dataset.view;
+          render();
+        });
+      });
+
+      render();
+    </script>
+  </body>
+</html>
