@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Resume Reviewer</title>
+    <style>
+      :root {
+        --bg: #f6f7f9;
+        --panel: #ffffff;
+        --text: #17202a;
+        --muted: #667085;
+        --line: #d9dee7;
+        --accent: #2563eb;
+        --good: #0f766e;
+        --warn: #b45309;
+        --bad: #b42318;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--text); }
+      .shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+      header { padding: 28px 0 18px; border-bottom: 1px solid var(--line); }
+      h1 { margin: 0; font-size: clamp(34px, 6vw, 64px); line-height: 1; letter-spacing: 0; }
+      .lead { max-width: 720px; color: var(--muted); font-size: 17px; line-height: 1.7; }
+      main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 18px; padding: 28px 0 40px; }
+      .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px; }
+      .inputs { display: grid; gap: 14px; }
+      label { display: grid; gap: 8px; font-weight: 700; }
+      textarea, input { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 12px; font: inherit; background: #fff; color: var(--text); }
+      textarea { min-height: 210px; resize: vertical; line-height: 1.5; }
+      button { min-height: 42px; border: 0; border-radius: 6px; padding: 0 16px; background: var(--accent); color: #fff; font-weight: 750; cursor: pointer; }
+      .score { display: grid; gap: 8px; margin-bottom: 18px; }
+      .score strong { font-size: 48px; line-height: 1; }
+      .bar { height: 10px; overflow: hidden; border-radius: 999px; background: #e8edf5; }
+      .bar span { display: block; height: 100%; width: 0%; background: var(--accent); transition: width .2s ease; }
+      h2 { margin: 0 0 12px; font-size: 19px; }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+      .chip { padding: 6px 9px; border-radius: 999px; background: #e7efff; color: #174ea6; font-size: 12px; font-weight: 700; }
+      .chip.missing { background: #fff7ed; color: var(--warn); }
+      .list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+      .list li { padding: 10px 0; border-bottom: 1px solid var(--line); color: var(--muted); line-height: 1.5; }
+      .status { font-weight: 750; color: var(--good); }
+      @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <h1>AI Resume Reviewer</h1>
+        <p class="lead">一个面向求职者的简历和岗位 JD 匹配分析工具。MVP 先用本地规则计算匹配分、关键词覆盖和可执行修改建议，后续可接入 AI 优化表达。</p>
+      </header>
+
+      <main>
+        <section class="panel inputs" aria-label="Resume analysis form">
+          <label>
+            Target Role
+            <input id="role" value="Frontend Engineer / AI Product Engineer" />
+          </label>
+          <label>
+            Resume
+            <textarea id="resume">Frontend developer with React, TypeScript, Next.js and Tailwind CSS experience. Built dashboards, portfolio pages, forms, charts, and AI-assisted workflows. Familiar with GitHub, Vercel, responsive UI, accessibility, and product thinking.</textarea>
+          </label>
+          <label>
+            Job Description
+            <textarea id="jd">We are looking for a frontend engineer with React, TypeScript, Next.js, dashboard experience, strong UI taste, accessibility awareness, API integration, and ability to build AI product prototypes.</textarea>
+          </label>
+          <button id="analyze">Analyze Resume</button>
+        </section>
+
+        <aside class="panel" aria-live="polite">
+          <div class="score">
+            <span class="status" id="status">Ready</span>
+            <strong id="score">0</strong>
+            <div class="bar"><span id="bar"></span></div>
+          </div>
+
+          <h2>Matched Keywords</h2>
+          <div class="chips" id="matched"></div>
+
+          <h2 style="margin-top: 22px;">Missing Keywords</h2>
+          <div class="chips" id="missing"></div>
+
+          <h2 style="margin-top: 22px;">Rewrite Actions</h2>
+          <ul class="list" id="actions"></ul>
+        </aside>
+      </main>
+    </div>
+
+    <script>
+      const keywords = [
+        "react", "typescript", "next.js", "tailwind", "dashboard", "ui",
+        "accessibility", "api", "ai", "product", "github", "vercel",
+        "forms", "charts", "responsive"
+      ];
+
+      function includes(text, word) {
+        return text.toLowerCase().includes(word.toLowerCase());
+      }
+
+      function analyze() {
+        const resume = document.querySelector("#resume").value;
+        const jd = document.querySelector("#jd").value;
+        const required = keywords.filter((word) => includes(jd, word));
+        const matched = required.filter((word) => includes(resume, word));
+        const missing = required.filter((word) => !includes(resume, word));
+        const score = required.length ? Math.round((matched.length / required.length) * 100) : 0;
+
+        document.querySelector("#score").textContent = score;
+        document.querySelector("#bar").style.width = `${score}%`;
+        document.querySelector("#status").textContent = score >= 75 ? "Strong match" : score >= 50 ? "Needs targeted edits" : "Needs repositioning";
+        renderChips("#matched", matched, "");
+        renderChips("#missing", missing, "missing");
+        renderActions(missing);
+
+        localStorage.setItem("resume-review:last", JSON.stringify({ resume, jd, score, at: new Date().toISOString() }));
+      }
+
+      function renderChips(selector, items, extraClass) {
+        const target = document.querySelector(selector);
+        target.innerHTML = items.length
+          ? items.map((item) => `<span class="chip ${extraClass}">${item}</span>`).join("")
+          : '<span class="chip missing">No items</span>';
+      }
+
+      function renderActions(missing) {
+        const base = [
+          "把项目描述改成结果导向：动作 + 技术 + 可量化影响。",
+          "在 Projects 区域补充 Demo、源码、截图和你负责的设计取舍。",
+          "简历顶部用 2-3 行说明目标岗位和核心能力，不要只堆技术名词。"
+        ];
+        const targeted = missing.slice(0, 5).map((word) => `补充和 ${word} 相关的真实项目证据。`);
+        document.querySelector("#actions").innerHTML = [...targeted, ...base]
+          .map((item) => `<li>${item}</li>`)
+          .join("");
+      }
+
+      document.querySelector("#analyze").addEventListener("click", analyze);
+      analyze();
+    </script>
+  </body>
+</html>
