@@ -1,12 +1,425 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Personal Website</title>
+    <meta name="description" content="徐铭杰的产品型前端与 AI 应用作品集，展示简历分析、求职看板、产品数据分析和后台系统设计。">
+    <title>徐铭杰 | Product-minded Frontend & AI Apps</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: #f7f7f4;
+            --panel: #ffffff;
+            --text: #1f2933;
+            --muted: #667085;
+            --line: #deded7;
+            --accent: #2563eb;
+            --accent-soft: #e7efff;
+            --ok: #0f766e;
+            --warn: #b45309;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        a {
+            color: inherit;
+        }
+
+        .shell {
+            width: min(1120px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 28px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .brand {
+            display: grid;
+            gap: 4px;
+        }
+
+        .brand strong {
+            font-size: 18px;
+        }
+
+        .brand span,
+        nav {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        nav {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+            gap: 32px;
+            padding: 64px 0 40px;
+            align-items: end;
+        }
+
+        h1 {
+            max-width: 760px;
+            margin: 0;
+            font-size: clamp(40px, 7vw, 78px);
+            line-height: 0.96;
+            letter-spacing: 0;
+        }
+
+        .lead {
+            max-width: 660px;
+            margin: 24px 0 0;
+            color: var(--muted);
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        .status {
+            display: grid;
+            gap: 12px;
+            padding: 20px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            font-size: 14px;
+        }
+
+        .status-row span {
+            color: var(--muted);
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 28px;
+        }
+
+        .button {
+            display: inline-flex;
+            min-height: 42px;
+            align-items: center;
+            justify-content: center;
+            padding: 0 16px;
+            border-radius: 6px;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            text-decoration: none;
+            font-weight: 650;
+        }
+
+        .button.primary {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: #ffffff;
+        }
+
+        section {
+            padding: 40px 0;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 18px;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 0;
+        }
+
+        .section-head p {
+            max-width: 520px;
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .project {
+            min-height: 260px;
+            display: grid;
+            align-content: space-between;
+            gap: 20px;
+            padding: 20px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+
+        .project h3 {
+            margin: 0 0 10px;
+            font-size: 19px;
+        }
+
+        .project p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            padding: 5px 8px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: #174ea6;
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .tag.todo {
+            background: #fff7ed;
+            color: var(--warn);
+        }
+
+        .timeline {
+            display: grid;
+            border-top: 1px solid var(--line);
+        }
+
+        .step {
+            display: grid;
+            grid-template-columns: 120px minmax(0, 1fr);
+            gap: 20px;
+            padding: 18px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .step strong {
+            color: var(--ok);
+        }
+
+        .step p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 36px 0;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        @media (max-width: 860px) {
+            header,
+            .section-head,
+            footer {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .hero,
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding-top: 40px;
+            }
+
+            .step {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to my personal website</h1>
-    <p>This is a simple personal page for API registration.</p>
+    <div class="shell">
+        <header>
+            <div class="brand">
+                <strong>徐铭杰</strong>
+                <span>Product-minded Frontend / AI Apps</span>
+            </div>
+            <nav aria-label="Primary navigation">
+                <a href="#projects">Projects</a>
+                <a href="#plan">Build Plan</a>
+                <a href="https://github.com/MmIiNnGgXx">GitHub</a>
+            </nav>
+        </header>
+
+        <main>
+            <section class="hero">
+                <div>
+                    <h1>把模糊需求做成可用、清晰、能展示判断力的产品界面。</h1>
+                    <p class="lead">
+                        我正在建设一组公开 GitHub 作品：AI 求职工具、投递看板、产品数据分析、
+                        CMS 后台和离线效率应用。重点展示前端工程、产品结构、UI 细节和 AI 应用落地。
+                    </p>
+                    <div class="actions">
+                        <a class="button primary" href="#projects">查看项目矩阵</a>
+                        <a class="button" href="https://github.com/MmIiNnGgXx/personal-website">查看源码</a>
+                    </div>
+                </div>
+
+                <aside class="status" aria-label="Portfolio status">
+                    <div class="status-row"><span>Current focus</span><strong>Portfolio MVP</strong></div>
+                    <div class="status-row"><span>Stack</span><strong>Static / Next.js ready</strong></div>
+                    <div class="status-row"><span>Public repos</span><strong>Planned</strong></div>
+                    <div class="status-row"><span>Demo target</span><strong>GitHub Pages / Vercel</strong></div>
+                </aside>
+            </section>
+
+            <section id="projects">
+                <div class="section-head">
+                    <h2>Selected Product Projects</h2>
+                    <p>
+                        每个项目都控制在可运行 MVP 范围内：一个明确用户场景、一个完整核心流程、
+                        一份清晰 README 和一个可访问 Demo。
+                    </p>
+                </div>
+
+                <div class="grid">
+                    <article class="project">
+                        <div>
+                            <h3>AI Resume Reviewer</h3>
+                            <p>粘贴简历和岗位 JD，输出匹配分、缺失关键词、结构反馈和可执行修改建议。</p>
+                        </div>
+                        <div class="tags">
+                            <span class="tag">AI Product</span>
+                            <span class="tag">Resume</span>
+                            <span class="tag todo">MVP Next</span>
+                        </div>
+                    </article>
+
+                    <article class="project">
+                        <div>
+                            <h3>Job Search Dashboard</h3>
+                            <p>管理职位、投递阶段、面试、跟进任务和求职统计，让求职过程像产品工作台。</p>
+                        </div>
+                        <div class="tags">
+                            <span class="tag">Kanban</span>
+                            <span class="tag">Dashboard</span>
+                            <span class="tag todo">MVP Next</span>
+                        </div>
+                    </article>
+
+                    <article class="project">
+                        <div>
+                            <h3>Product Analytics Dashboard</h3>
+                            <p>展示增长、激活、漏斗、留存和事件明细，体现指标设计与数据界面能力。</p>
+                        </div>
+                        <div class="tags">
+                            <span class="tag">Analytics</span>
+                            <span class="tag">Charts</span>
+                            <span class="tag todo">Planned</span>
+                        </div>
+                    </article>
+
+                    <article class="project">
+                        <div>
+                            <h3>Commerce CMS Dashboard</h3>
+                            <p>轻量商品、订单、客户和设置后台，强调表格、表单、状态和后台信息架构。</p>
+                        </div>
+                        <div class="tags">
+                            <span class="tag">Admin</span>
+                            <span class="tag">Forms</span>
+                            <span class="tag todo">Planned</span>
+                        </div>
+                    </article>
+
+                    <article class="project">
+                        <div>
+                            <h3>Habit Focus Tracker</h3>
+                            <p>离线优先的习惯与专注追踪器，包含热力图、连续天数和本地数据保存。</p>
+                        </div>
+                        <div class="tags">
+                            <span class="tag">Offline-first</span>
+                            <span class="tag">PWA</span>
+                            <span class="tag todo">Planned</span>
+                        </div>
+                    </article>
+
+                    <article class="project">
+                        <div>
+                            <h3>Personal Website</h3>
+                            <p>当前页面是作品集入口，后续会连接每个项目的 Demo、源码、截图和设计取舍。</p>
+                        </div>
+                        <div class="tags">
+                            <span class="tag">Portfolio</span>
+                            <span class="tag">GitHub Pages</span>
+                            <span class="tag">Live</span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section id="plan">
+                <div class="section-head">
+                    <h2>Build Plan</h2>
+                    <p>第一批先做能和求职强相关的项目，再补数据和后台类项目。</p>
+                </div>
+                <div class="timeline">
+                    <div class="step">
+                        <strong>Step 1</strong>
+                        <p>完善个人主站：项目矩阵、作品详情模板、简历入口和 GitHub 链接。</p>
+                    </div>
+                    <div class="step">
+                        <strong>Step 2</strong>
+                        <p>实现 AI Resume Reviewer：先用本地规则评分，后续可接 AI key 优化文案。</p>
+                    </div>
+                    <div class="step">
+                        <strong>Step 3</strong>
+                        <p>实现 Job Search Dashboard：职位状态流、跟进提醒、统计卡和本地保存。</p>
+                    </div>
+                    <div class="step">
+                        <strong>Step 4</strong>
+                        <p>补齐 Analytics、CMS 和 Habit Tracker，统一 README、截图和部署链接。</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <span>Built by 徐铭杰</span>
+            <span>Frontend Engineering / Product UI / AI Applications</span>
+        </footer>
+    </div>
 </body>
 </html>
