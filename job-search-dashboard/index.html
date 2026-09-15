@@ -1,204 +1,30 @@
 <!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>求职管理工作台</title>
-    <style>
-      :root {
-        --bg: #f5f6f8;
-        --panel: #ffffff;
-        --text: #18212f;
-        --muted: #667085;
-        --line: #d9dee7;
-        --accent: #2563eb;
-        --ok: #0f766e;
-        --warn: #b45309;
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      }
-      * { box-sizing: border-box; }
-      body { margin: 0; background: var(--bg); color: var(--text); }
-      .shell { width: min(1240px, calc(100% - 32px)); margin: 0 auto; }
-      header { padding: 28px 0 18px; border-bottom: 1px solid var(--line); }
-      h1 { margin: 0; font-size: clamp(34px, 6vw, 64px); line-height: 1; letter-spacing: 0; }
-      .lead { max-width: 760px; color: var(--muted); font-size: 17px; line-height: 1.7; }
-      .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding: 22px 0; }
-      .stat, .panel, .job { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
-      .stat { padding: 16px; }
-      .stat span { color: var(--muted); font-size: 13px; }
-      .stat strong { display: block; margin-top: 8px; font-size: 28px; }
-      .layout { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 16px; padding-bottom: 40px; }
-      .panel { padding: 16px; }
-      form { display: grid; gap: 10px; }
-      label { display: grid; gap: 6px; color: var(--muted); font-size: 13px; font-weight: 700; }
-      input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 10px; font: inherit; background: #fff; color: var(--text); }
-      textarea { min-height: 72px; resize: vertical; }
-      button { min-height: 40px; border: 0; border-radius: 6px; padding: 0 14px; background: var(--accent); color: #fff; font-weight: 750; cursor: pointer; }
-      .board { display: grid; grid-template-columns: repeat(5, minmax(180px, 1fr)); gap: 12px; overflow-x: auto; padding-bottom: 4px; }
-      .column { min-width: 180px; display: grid; align-content: start; gap: 10px; }
-      .column h2 { margin: 0; font-size: 15px; }
-      .job { padding: 12px; display: grid; gap: 10px; }
-      .job h3 { margin: 0; font-size: 15px; }
-      .job p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
-      .move { display: flex; gap: 8px; }
-      .move button { flex: 1; min-height: 32px; background: #eef2ff; color: #174ea6; }
-      @media (max-width: 980px) { .layout, .stats { grid-template-columns: 1fr; } }
-    
-      :root { --bg:#f4f6f7; --text:#202629; --ink:#202629; --muted:#596469; --line:#dde3e5; --accent:#087f75; --blue:#087f75; --accent-soft:#e6f3f0; font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
-      body { font-size:14px; line-height:1.6; }
-      .shell { width:min(1440px,calc(100% - 64px)); }
-      header { padding:24px 0; align-items:center; gap:20px; }
-      h1 { font-size:28px; line-height:1.4; overflow-wrap:anywhere; }
-      h2 { font-size:17px; line-height:1.5; }
-      h3 { line-height:1.5; }
-      .subtitle { display:block; color:var(--muted); font-size:12px; font-weight:400; margin-top:4px; }
-      .workspace-nav { display:flex; gap:24px; flex-wrap:wrap; padding:16px 0; border-bottom:1px solid var(--line); }
-      .workspace-nav a { color:var(--muted); text-decoration:none; font-size:13px; }
-      .workspace-nav a[aria-current="page"] { color:var(--accent); font-weight:700; }
-      .panel { border:0; border-radius:0; background:#fff; padding:24px; min-width:0; }
-      .metrics,.stats { gap:0; border-bottom:1px solid var(--line); }
-      .metrics>.card,.metric,.stat { border:0; border-radius:0; border-right:1px solid var(--line); background:transparent; padding:18px 24px; }
-      .metrics>:last-child,.stats>:last-child { border-right:0; }
-      .metric strong,.stat strong,.card strong { font-variant-numeric:tabular-nums; }
-      .grid,.layout,main { min-width:0; }
-      input,select,textarea { min-width:0; font-weight:400; }
-      button,.button { font-weight:600; transition:background .15s; }
-      button:hover,.button:hover { filter:brightness(.94); }
-      button:disabled { opacity:.45; cursor:not-allowed; }
-      :focus-visible { outline:3px solid #087f75; outline-offset:3px; }
-      th { background:#f5f7f8; white-space:nowrap; text-transform:none; }
-      td { overflow-wrap:anywhere; }
-      tbody tr:hover { background:#f5faf9; }
-      .badge,.chip,.tag { border-radius:4px; }
-      .ghost,.move button { background:#e6f3f0; color:#086b62; }
-      .bar { border-radius:3px; }
-      .area { fill:#e6f3f0; }
-      .table-wrap { max-width:100%; }
-      @media(max-width:980px) { .shell { width:calc(100% - 32px); } .metrics,.stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-      @media(max-width:560px) { h1 { font-size:23px; } header { padding:18px 0; } .panel { padding:16px; } .workspace-nav { gap:12px; } .metrics>.card,.metric,.stat { padding:14px 10px; } .metric strong,.stat strong,.card strong { font-size:25px; } }
-      @media(prefers-reduced-motion:reduce) { * { transition:none!important; } }
-
-.opportunities{min-width:0}.filterbar{display:flex;gap:12px;margin-bottom:20px}.filterbar input{flex:1}.filterbar select{width:140px}.column{background:#edf1f2;padding:12px;border-radius:6px}.column h2{font-size:14px;margin-bottom:6px}.empty{color:var(--muted);text-align:center;padding:28px 0}.layout{grid-template-columns:270px minmax(0,1fr)}.job{box-shadow:0 2px 3px #20262906}.job h3,.job p{overflow-wrap:anywhere}@media(max-width:980px){.layout{grid-template-columns:1fr}.board{grid-template-columns:repeat(5,230px)}.filterbar{flex-wrap:wrap}}
-</style>
-  </head>
-  <body>
-    <div class="shell">
-<nav class="workspace-nav" aria-label="作品导航"><a href="../">徐铭杰 / 作品集</a><a href="../ai-resume-reviewer/">简历诊断</a><a href="../job-search-dashboard/" aria-current="page">求职管理</a><a href="../product-analytics-dashboard/">数据分析</a><a href="../commerce-cms-dashboard/">商品运营</a></nav>
-      <header>
-        <h1>求职管理工作台<span class="subtitle">Job Workspace</span></h1>
-        
-      </header>
-
-      <section class="stats" aria-label="求职统计">
-        <div class="stat"><span>全部职位</span><strong id="total">0</strong></div>
-        <div class="stat"><span>面试中</span><strong id="interviews">0</strong></div>
-        <div class="stat"><span>已获录用</span><strong id="offers">0</strong></div>
-        <div class="stat"><span>回复率</span><strong id="rate">0%</strong></div>
-      </section>
-
-      <main class="layout">
-        <aside class="panel">
-          <h2>新增职位</h2>
-          <form id="form">
-            <label>公司名称 <input id="company" required value="" /></label>
-            <label>应聘岗位 <input id="role" required value="" /></label>
-            <label>投递阶段
-              <select id="status">
-                <option value="Saved">待投递</option>
-                <option value="Applied">已投递</option>
-                <option value="Interview">面试中</option>
-                <option value="Offer">已录用</option>
-                <option value="Rejected">已结束</option>
-              </select>
-            </label>
-            <label>下次跟进 <input id="next" value="" /></label>
-            <label>面试备注 <textarea id="notes"></textarea></label>
-            <button>保存职位</button>
-          </form>
-        </aside>
-
-        <section class="opportunities"><div class="filterbar"><input id="search" aria-label="搜索公司或岗位" placeholder="搜索公司或岗位"><select id="stageFilter" aria-label="筛选阶段"><option value="">全部阶段</option><option value="Saved">待投递</option><option value="Applied">已投递</option><option value="Interview">面试中</option><option value="Offer">已录用</option><option value="Rejected">已结束</option></select></div><section class="board" id="board" aria-label="投递阶段看板"></section></section>
-      </main>
-    </div>
-
-    <script>
-      const labels = {Saved:"待投递", Applied:"已投递", Interview:"面试中", Offer:"已录用", Rejected:"已结束"};
-      const columns = ["Saved", "Applied", "Interview", "Offer", "Rejected"];
-      const seed = [
-        { company: "星辰科技（示例）", role: "AI 应用开发工程师", status: "Applied", next: "发送作品集链接", notes: "准备简历诊断项目的技术复盘。" },
-        { company: "知序数据（示例）", role: "数据可视化工程师", status: "Interview", next: "准备数据看板案例", notes: "重点展示筛选联动和指标设计。" }
-      ];
-      let jobs;
-      try { jobs = JSON.parse(localStorage.getItem("jobs") || "null") || seed; if(!Array.isArray(jobs)) throw Error(); } catch { jobs = seed; }
-      let editing = -1;
-      const escape = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-
-      function save() {
-        localStorage.setItem("jobs", JSON.stringify(jobs));
-      }
-
-      function render() {
-        document.querySelector("#board").innerHTML = columns.map((column) => {
-          const query = document.querySelector("#search").value.trim().toLowerCase();
-          const stage = document.querySelector("#stageFilter").value;
-          const items = jobs.filter(job => job.status === column && (!stage || job.status === stage) && (job.company + job.role).toLowerCase().includes(query));
-          return `<div class="column"><h2>${labels[column]} · ${items.length}</h2>${items.length ? items.map(card).join("") : '<p class="empty">暂无职位</p>'}</div>`;
-        }).join("");
-
-        document.querySelector("#total").textContent = jobs.length;
-        document.querySelector("#interviews").textContent = jobs.filter((job) => job.status === "Interview").length;
-        document.querySelector("#offers").textContent = jobs.filter((job) => job.status === "Offer").length;
-        const responses = jobs.filter((job) => ["Interview", "Offer", "Rejected"].includes(job.status)).length;
-        document.querySelector("#rate").textContent = jobs.length ? `${Math.round((responses / (jobs.filter(j => j.status !== "Saved").length || 1)) * 100)}%` : "0%";
-      }
-
-      function card(job, index) {
-        const realIndex = jobs.indexOf(job);
-        return `<article class="job">
-          <div>
-            <h3>${escape(job.company)}</h3>
-            <p>${escape(job.role)}</p>
-          </div>
-          <p><strong>跟进：</strong> ${escape(job.next || "暂未安排")}</p>
-          <p>${escape(job.notes || "")}</p>
-          <div class="move">
-            <button type="button" aria-label="退回上一阶段" title="退回上一阶段" ${job.status === "Saved" ? "disabled" : ""} onclick="move(${realIndex}, -1)">←</button>
-            <button type="button" aria-label="推进下一阶段" title="推进下一阶段" ${job.status === "Rejected" ? "disabled" : ""} onclick="move(${realIndex}, 1)">→</button>
-          </div><div class="move"><button type="button" onclick="editJob(${realIndex})">编辑</button><button type="button" onclick="deleteJob(${realIndex})">删除</button></div>
-        </article>`;
-      }
-
-      function move(index, direction) {
-        const current = columns.indexOf(jobs[index].status);
-        const next = Math.max(0, Math.min(columns.length - 1, current + direction));
-        jobs[index].status = columns[next];
-        save();
-        render();
-      }
-
-      document.querySelector("#form").addEventListener("submit", (event) => {
-        event.preventDefault();
-        const job = {
-          company: document.querySelector("#company").value,
-          role: document.querySelector("#role").value,
-          status: document.querySelector("#status").value,
-          next: document.querySelector("#next").value,
-          notes: document.querySelector("#notes").value
-        };
-        if(!job.company.trim() || !job.role.trim()) return;
-        if(editing < 0) jobs.unshift(job); else jobs[editing] = job;
-        editing = -1;
-        event.target.reset();
-        document.querySelector("aside h2").textContent = "新增职位";
-        save();
-        render();
-      });
-
-      function editJob(index) { editing = index; ["company","role","status","next","notes"].forEach(k => document.getElementById(k).value = jobs[index][k] || ""); document.querySelector("aside h2").textContent = "编辑职位"; document.getElementById("company").focus(); }
-      function deleteJob(index) { if(!confirm("删除该职位及备注？")) return; jobs.splice(index,1); editing = -1; document.getElementById("form").reset(); document.querySelector("aside h2").textContent = "新增职位"; save(); render(); }
-      document.getElementById("search").addEventListener("input",render);
-      document.getElementById("stageFilter").addEventListener("change",render);
-      render();
-    </script>
-  </body>
-</html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>求职管理工作台 · 徐铭杰作品集</title><link rel="stylesheet" href="style.css"><script src="app.js" defer></script></head>
+<body>
+<aside class="sidebar">
+<a class="brand" href="../"><span class="brand-mark"><img src="icons/briefcase-business.svg" alt=""></span><span>求职工作台<small>CAREER WORKSPACE</small></span></a>
+<span class="nav-label">我的求职</span>
+<nav aria-label="工作区导航"><a href="#jobs" data-view="jobs"><img src="icons/columns-3.svg" alt="">职位管理<span id="navCount">0</span></a><a href="#schedule" data-view="schedule"><img src="icons/calendar-days.svg" alt="">跟进日程<span id="dueCount">0</span></a><a href="#overview" data-view="overview"><img src="icons/layout-dashboard.svg" alt="">求职概览</a></nav>
+<div class="sidebar-bottom"><a href="../ai-resume-reviewer/">简历与岗位诊断 <img src="icons/arrow-right.svg" alt=""></a><a href="../">返回作品集 <img src="icons/arrow-left.svg" alt=""></a><div class="account"><span class="avatar">我</span><div>个人工作区<small>数据保存在此浏览器</small></div></div></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><span>个人工作区 <span class="slash">/</span> <strong id="breadcrumb">职位管理</strong></span><span id="today" class="muted"></span></header>
+<main>
+<div class="pagehead"><div><span class="eyebrow" id="eyebrow">OPPORTUNITIES</span><h1 id="pageTitle">职位管理</h1></div><div class="head-actions"><button class="icon-button" data-action="import" title="导入备份" aria-label="导入备份"><img src="icons/upload.svg" alt=""></button><button class="icon-button" data-action="export" title="导出备份" aria-label="导出备份"><img src="icons/download.svg" alt=""></button><button class="primary" data-action="new"><img src="icons/plus.svg" alt="">新增职位</button></div></div>
+<input type="file" id="importFile" accept=".json,application/json" hidden>
+<section class="stats" aria-label="求职统计"><div><span>全部职位</span><strong id="total">0</strong><small id="activeCount"></small></div><div><span>面试中</span><strong id="interviews" class="text-blue">0</strong><small>当前面试阶段</small></div><div><span>已获录用</span><strong id="offers" class="text-green">0</strong><small>当前录用阶段</small></div><div><span>有进展比例</span><strong id="rate">0%</strong><small>面试或录用 / 已投递职位</small></div></section>
+<section id="jobsView">
+<div class="toolbar"><label class="search"><img src="icons/search.svg" alt=""><input id="search" placeholder="搜索公司、岗位或城市" aria-label="搜索公司或岗位"></label><select id="stageFilter" aria-label="筛选阶段"><option value="">全部阶段</option></select><select id="priorityFilter" aria-label="筛选优先级"><option value="">全部优先级</option><option value="high">高优先级</option><option value="normal">中优先级</option><option value="low">低优先级</option></select><select id="sort" aria-label="排序"><option value="created">最近添加</option><option value="priority">优先级优先</option><option value="deadline">跟进日期优先</option></select><div class="view-switch" role="group" aria-label="显示方式"><button class="icon-button active" data-action="board" aria-label="看板视图" title="看板视图" aria-pressed="true"><img src="icons/columns-3.svg" alt=""></button><button class="icon-button" data-action="list" aria-label="列表视图" title="列表视图" aria-pressed="false"><img src="icons/list.svg" alt=""></button></div></div>
+<div class="result-line"><span id="resultCount"></span><button class="text-button" id="clearFilters" data-action="clear" hidden>清除筛选</button></div>
+<div class="board" id="board" aria-label="投递阶段看板"></div><div class="table-wrap" id="jobTable" hidden><table><thead><tr><th>公司 / 岗位</th><th>城市</th><th>薪资</th><th>阶段</th><th>优先级</th><th>下次跟进</th><th>操作</th></tr></thead><tbody id="jobRows"></tbody></table></div>
+</section>
+<section id="scheduleView" hidden><div class="section-head"><h2>待办与面试</h2><select id="scheduleFilter" aria-label="日程范围"><option value="all">全部待办</option><option value="today">今天</option><option value="overdue">已逾期</option><option value="week">未来七天</option></select></div><div id="scheduleList"></div></section>
+<section id="overviewView" hidden><div class="overview-grid"><section><div class="section-head"><h2>投递阶段分布</h2><span class="muted">当前快照</span></div><div id="stageChart"></div></section><section><div class="section-head"><h2>优先跟进</h2><span class="muted">未完成事项</span></div><div id="focusList"></div></section></div><section class="activity-section"><div class="section-head"><h2>最近动态</h2></div><div id="activityList"></div></section></section>
+</main></div>
+<dialog id="editor" aria-labelledby="editorTitle"><form id="form"><div class="dialog-head"><div><span class="eyebrow">OPPORTUNITY</span><h2 id="editorTitle">新增职位</h2></div><button type="button" class="icon-button" data-action="close-editor" aria-label="关闭表单" title="关闭表单"><img src="icons/x.svg" alt=""></button></div>
+<div class="form-grid"><label>公司名称 <input id="company" required maxlength="100" placeholder="例如：星辰科技"></label><label>应聘岗位 <input id="role" required maxlength="100" placeholder="例如：前端开发工程师"></label><label>城市 <input id="city" maxlength="60" placeholder="例如：厦门 / 远程"></label><label>薪资范围 <input id="salary" maxlength="60" placeholder="例如：10–15K · 13薪"></label><label>投递阶段 <select id="status"></select></label><label>优先级 <select id="priority"><option value="normal">中优先级</option><option value="high">高优先级</option><option value="low">低优先级</option></select></label><label class="wide">下次跟进 <input id="next" maxlength="240" placeholder="例如：发送作品集，确认面试安排"></label><label>跟进日期 <input id="deadline" type="date"></label><label>投递渠道 <input id="source" maxlength="60" placeholder="例如：官网 / 内推"></label><label class="wide">职位备注 <textarea id="notes" maxlength="4000" rows="4" placeholder="记录岗位要求、沟通要点或准备事项"></textarea></label></div>
+<div id="formError" role="alert" class="error"></div><div class="dialog-actions"><button type="button" data-action="close-editor">取消</button><button class="primary" type="submit">保存职位</button></div></form></dialog>
+<dialog id="detail" class="drawer" aria-labelledby="detailTitle"><div class="dialog-head"><span class="eyebrow">OPPORTUNITY DETAILS</span><button class="icon-button" data-action="close-detail" aria-label="关闭详情" title="关闭详情"><img src="icons/x.svg" alt=""></button></div><div id="detailBody"></div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body></html>
