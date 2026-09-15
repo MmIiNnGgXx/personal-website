@@ -1,31 +1,23 @@
-# Commerce CMS Dashboard
+# 商品运营后台
 
-Commerce CMS Dashboard is a lightweight admin interface for products, orders, customers, and store operations.
+中文优先的可交互前端作品，英文仅作辅助标题。
 
-## MVP
+[在线体验](https://mmiinnggxx.github.io/personal-website/commerce-cms-dashboard/)
 
-- Store KPI cards
-- Product creation form
-- Products table with stock status
-- Orders table with status filter
-- Customers table with segments
-- Local product persistence
+## 已实现
 
-## Tech
+新增商品、库存预警、订单筛选、客户视图、订单金额汇总、本地保存和示例重置。
 
-- HTML
-- CSS
-- JavaScript
-- GitHub Pages
+## 技术与运行
 
-## Why This Exists
+HTML、CSS、原生 JavaScript。直接打开 index.html，或通过 GitHub Pages 访问。无安装与构建步骤。
 
-This project demonstrates B-side product UI, table ergonomics, form handling, status modeling, and a practical admin information architecture.
+## 当前边界
 
-## Next
+商品可以新增，尚无编辑与删除；订单和客户为只读示例，未接入支付、物流或账号权限。
 
-- Add edit/delete actions
-- Add search
-- Add validation messages
-- Add settings page
-- Add CSV import/export
+## 验证
+
+在原工作区通过 Playwright 验证 1440px 桌面与 390px 手机布局、核心交互及控制台错误。
+
+[优化说明与验收方法](../docs/UI_OPTIMIZATION_GUIDE.md)

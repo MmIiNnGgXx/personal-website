@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Job Search Dashboard</title>
+    <title>求职管理工作台</title>
     <style>
       :root {
         --bg: #f5f6f8;
@@ -43,54 +43,95 @@
       .move { display: flex; gap: 8px; }
       .move button { flex: 1; min-height: 32px; background: #eef2ff; color: #174ea6; }
       @media (max-width: 980px) { .layout, .stats { grid-template-columns: 1fr; } }
-    </style>
+    
+      :root { --bg:#f4f6f7; --text:#202629; --ink:#202629; --muted:#596469; --line:#dde3e5; --accent:#087f75; --blue:#087f75; --accent-soft:#e6f3f0; font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+      body { font-size:14px; line-height:1.6; }
+      .shell { width:min(1440px,calc(100% - 64px)); }
+      header { padding:24px 0; align-items:center; gap:20px; }
+      h1 { font-size:28px; line-height:1.4; overflow-wrap:anywhere; }
+      h2 { font-size:17px; line-height:1.5; }
+      h3 { line-height:1.5; }
+      .subtitle { display:block; color:var(--muted); font-size:12px; font-weight:400; margin-top:4px; }
+      .workspace-nav { display:flex; gap:24px; flex-wrap:wrap; padding:16px 0; border-bottom:1px solid var(--line); }
+      .workspace-nav a { color:var(--muted); text-decoration:none; font-size:13px; }
+      .workspace-nav a[aria-current="page"] { color:var(--accent); font-weight:700; }
+      .panel { border:0; border-radius:0; background:#fff; padding:24px; min-width:0; }
+      .metrics,.stats { gap:0; border-bottom:1px solid var(--line); }
+      .metrics>.card,.metric,.stat { border:0; border-radius:0; border-right:1px solid var(--line); background:transparent; padding:18px 24px; }
+      .metrics>:last-child,.stats>:last-child { border-right:0; }
+      .metric strong,.stat strong,.card strong { font-variant-numeric:tabular-nums; }
+      .grid,.layout,main { min-width:0; }
+      input,select,textarea { min-width:0; font-weight:400; }
+      button,.button { font-weight:600; transition:background .15s; }
+      button:hover,.button:hover { filter:brightness(.94); }
+      button:disabled { opacity:.45; cursor:not-allowed; }
+      :focus-visible { outline:3px solid #087f75; outline-offset:3px; }
+      th { background:#f5f7f8; white-space:nowrap; text-transform:none; }
+      td { overflow-wrap:anywhere; }
+      tbody tr:hover { background:#f5faf9; }
+      .badge,.chip,.tag { border-radius:4px; }
+      .ghost,.move button { background:#e6f3f0; color:#086b62; }
+      .bar { border-radius:3px; }
+      .area { fill:#e6f3f0; }
+      .table-wrap { max-width:100%; }
+      @media(max-width:980px) { .shell { width:calc(100% - 32px); } .metrics,.stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+      @media(max-width:560px) { h1 { font-size:23px; } header { padding:18px 0; } .panel { padding:16px; } .workspace-nav { gap:12px; } .metrics>.card,.metric,.stat { padding:14px 10px; } .metric strong,.stat strong,.card strong { font-size:25px; } }
+      @media(prefers-reduced-motion:reduce) { * { transition:none!important; } }
+
+.opportunities{min-width:0}.filterbar{display:flex;gap:12px;margin-bottom:20px}.filterbar input{flex:1}.filterbar select{width:140px}.column{background:#edf1f2;padding:12px;border-radius:6px}.column h2{font-size:14px;margin-bottom:6px}.empty{color:var(--muted);text-align:center;padding:28px 0}.layout{grid-template-columns:270px minmax(0,1fr)}.job{box-shadow:0 2px 3px #20262906}.job h3,.job p{overflow-wrap:anywhere}@media(max-width:980px){.layout{grid-template-columns:1fr}.board{grid-template-columns:repeat(5,230px)}.filterbar{flex-wrap:wrap}}
+</style>
   </head>
   <body>
     <div class="shell">
+<nav class="workspace-nav" aria-label="作品导航"><a href="../">徐铭杰 / 作品集</a><a href="../ai-resume-reviewer/">简历诊断</a><a href="../job-search-dashboard/" aria-current="page">求职管理</a><a href="../product-analytics-dashboard/">数据分析</a><a href="../commerce-cms-dashboard/">商品运营</a></nav>
       <header>
-        <h1>Job Search Dashboard</h1>
-        <p class="lead">一个求职投递工作台：职位、阶段、面试、跟进动作和统计数据放在同一个界面里，帮助求职者减少遗漏。</p>
+        <h1>求职管理工作台<span class="subtitle">Job Workspace</span></h1>
+        
       </header>
 
-      <section class="stats" aria-label="Application stats">
-        <div class="stat"><span>Applications</span><strong id="total">0</strong></div>
-        <div class="stat"><span>Interviews</span><strong id="interviews">0</strong></div>
-        <div class="stat"><span>Offers</span><strong id="offers">0</strong></div>
-        <div class="stat"><span>Response Rate</span><strong id="rate">0%</strong></div>
+      <section class="stats" aria-label="求职统计">
+        <div class="stat"><span>全部职位</span><strong id="total">0</strong></div>
+        <div class="stat"><span>面试中</span><strong id="interviews">0</strong></div>
+        <div class="stat"><span>已获录用</span><strong id="offers">0</strong></div>
+        <div class="stat"><span>回复率</span><strong id="rate">0%</strong></div>
       </section>
 
       <main class="layout">
         <aside class="panel">
-          <h2>Add Application</h2>
+          <h2>新增职位</h2>
           <form id="form">
-            <label>Company <input id="company" required value="Example AI" /></label>
-            <label>Role <input id="role" required value="Frontend Engineer" /></label>
-            <label>Status
+            <label>公司名称 <input id="company" required value="" /></label>
+            <label>应聘岗位 <input id="role" required value="" /></label>
+            <label>投递阶段
               <select id="status">
-                <option>Saved</option>
-                <option>Applied</option>
-                <option>Interview</option>
-                <option>Offer</option>
-                <option>Rejected</option>
+                <option value="Saved">待投递</option>
+                <option value="Applied">已投递</option>
+                <option value="Interview">面试中</option>
+                <option value="Offer">已录用</option>
+                <option value="Rejected">已结束</option>
               </select>
             </label>
-            <label>Next Action <input id="next" value="Follow up this Friday" /></label>
-            <label>Notes <textarea id="notes">Portfolio and AI product experience are relevant.</textarea></label>
-            <button>Add Job</button>
+            <label>下次跟进 <input id="next" value="" /></label>
+            <label>面试备注 <textarea id="notes"></textarea></label>
+            <button>保存职位</button>
           </form>
         </aside>
 
-        <section class="board" id="board" aria-label="Application board"></section>
+        <section class="opportunities"><div class="filterbar"><input id="search" aria-label="搜索公司或岗位" placeholder="搜索公司或岗位"><select id="stageFilter" aria-label="筛选阶段"><option value="">全部阶段</option><option value="Saved">待投递</option><option value="Applied">已投递</option><option value="Interview">面试中</option><option value="Offer">已录用</option><option value="Rejected">已结束</option></select></div><section class="board" id="board" aria-label="投递阶段看板"></section></section>
       </main>
     </div>
 
     <script>
+      const labels = {Saved:"待投递", Applied:"已投递", Interview:"面试中", Offer:"已录用", Rejected:"已结束"};
       const columns = ["Saved", "Applied", "Interview", "Offer", "Rejected"];
       const seed = [
-        { company: "Northstar Labs", role: "AI Product Engineer", status: "Applied", next: "Send portfolio link", notes: "Highlight AI Resume Reviewer." },
-        { company: "MetricFlow", role: "Frontend Dashboard Engineer", status: "Interview", next: "Prepare dashboard case study", notes: "Analytics project is a strong match." }
+        { company: "星辰科技（示例）", role: "AI 应用开发工程师", status: "Applied", next: "发送作品集链接", notes: "准备简历诊断项目的技术复盘。" },
+        { company: "知序数据（示例）", role: "数据可视化工程师", status: "Interview", next: "准备数据看板案例", notes: "重点展示筛选联动和指标设计。" }
       ];
-      let jobs = JSON.parse(localStorage.getItem("jobs") || "null") || seed;
+      let jobs;
+      try { jobs = JSON.parse(localStorage.getItem("jobs") || "null") || seed; if(!Array.isArray(jobs)) throw Error(); } catch { jobs = seed; }
+      let editing = -1;
+      const escape = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
       function save() {
         localStorage.setItem("jobs", JSON.stringify(jobs));
@@ -98,30 +139,32 @@
 
       function render() {
         document.querySelector("#board").innerHTML = columns.map((column) => {
-          const items = jobs.filter((job) => job.status === column);
-          return `<div class="column"><h2>${column} · ${items.length}</h2>${items.map(card).join("")}</div>`;
+          const query = document.querySelector("#search").value.trim().toLowerCase();
+          const stage = document.querySelector("#stageFilter").value;
+          const items = jobs.filter(job => job.status === column && (!stage || job.status === stage) && (job.company + job.role).toLowerCase().includes(query));
+          return `<div class="column"><h2>${labels[column]} · ${items.length}</h2>${items.length ? items.map(card).join("") : '<p class="empty">暂无职位</p>'}</div>`;
         }).join("");
 
         document.querySelector("#total").textContent = jobs.length;
         document.querySelector("#interviews").textContent = jobs.filter((job) => job.status === "Interview").length;
         document.querySelector("#offers").textContent = jobs.filter((job) => job.status === "Offer").length;
         const responses = jobs.filter((job) => ["Interview", "Offer", "Rejected"].includes(job.status)).length;
-        document.querySelector("#rate").textContent = jobs.length ? `${Math.round((responses / jobs.length) * 100)}%` : "0%";
+        document.querySelector("#rate").textContent = jobs.length ? `${Math.round((responses / (jobs.filter(j => j.status !== "Saved").length || 1)) * 100)}%` : "0%";
       }
 
       function card(job, index) {
         const realIndex = jobs.indexOf(job);
         return `<article class="job">
           <div>
-            <h3>${job.company}</h3>
-            <p>${job.role}</p>
+            <h3>${escape(job.company)}</h3>
+            <p>${escape(job.role)}</p>
           </div>
-          <p><strong>Next:</strong> ${job.next || "No action set"}</p>
-          <p>${job.notes || ""}</p>
+          <p><strong>跟进：</strong> ${escape(job.next || "暂未安排")}</p>
+          <p>${escape(job.notes || "")}</p>
           <div class="move">
-            <button type="button" onclick="move(${realIndex}, -1)">←</button>
-            <button type="button" onclick="move(${realIndex}, 1)">→</button>
-          </div>
+            <button type="button" aria-label="退回上一阶段" title="退回上一阶段" ${job.status === "Saved" ? "disabled" : ""} onclick="move(${realIndex}, -1)">←</button>
+            <button type="button" aria-label="推进下一阶段" title="推进下一阶段" ${job.status === "Rejected" ? "disabled" : ""} onclick="move(${realIndex}, 1)">→</button>
+          </div><div class="move"><button type="button" onclick="editJob(${realIndex})">编辑</button><button type="button" onclick="deleteJob(${realIndex})">删除</button></div>
         </article>`;
       }
 
@@ -135,17 +178,26 @@
 
       document.querySelector("#form").addEventListener("submit", (event) => {
         event.preventDefault();
-        jobs.unshift({
+        const job = {
           company: document.querySelector("#company").value,
           role: document.querySelector("#role").value,
           status: document.querySelector("#status").value,
           next: document.querySelector("#next").value,
           notes: document.querySelector("#notes").value
-        });
+        };
+        if(!job.company.trim() || !job.role.trim()) return;
+        if(editing < 0) jobs.unshift(job); else jobs[editing] = job;
+        editing = -1;
+        event.target.reset();
+        document.querySelector("aside h2").textContent = "新增职位";
         save();
         render();
       });
 
+      function editJob(index) { editing = index; ["company","role","status","next","notes"].forEach(k => document.getElementById(k).value = jobs[index][k] || ""); document.querySelector("aside h2").textContent = "编辑职位"; document.getElementById("company").focus(); }
+      function deleteJob(index) { if(!confirm("删除该职位及备注？")) return; jobs.splice(index,1); editing = -1; document.getElementById("form").reset(); document.querySelector("aside h2").textContent = "新增职位"; save(); render(); }
+      document.getElementById("search").addEventListener("input",render);
+      document.getElementById("stageFilter").addEventListener("change",render);
       render();
     </script>
   </body>

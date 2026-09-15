@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="徐铭杰的产品型前端与 AI 应用作品集，展示简历分析、求职看板、产品数据分析和后台系统设计。">
-    <title>徐铭杰 | Product-minded Frontend & AI Apps</title>
+    <title>徐铭杰 | 前端开发与 AI 应用作品集</title>
     <style>
         :root {
             color-scheme: light;
@@ -276,6 +276,48 @@
                 gap: 8px;
             }
         }
+    .hero { display:block; padding:32px 0; } .hero h1 { font-size:36px; } .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .project { min-height:200px; } @media(max-width:700px){ .grid{grid-template-columns:1fr;} }
+
+      :root { --bg:#f4f6f7; --text:#202629; --ink:#202629; --muted:#596469; --line:#dde3e5; --accent:#087f75; --blue:#087f75; --accent-soft:#e6f3f0; font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+      body { font-size:14px; line-height:1.6; }
+      .shell { width:min(1440px,calc(100% - 64px)); }
+      header { padding:24px 0; align-items:center; gap:20px; }
+      h1 { font-size:28px; line-height:1.4; overflow-wrap:anywhere; }
+      h2 { font-size:17px; line-height:1.5; }
+      h3 { line-height:1.5; }
+      .subtitle { display:block; color:var(--muted); font-size:12px; font-weight:400; margin-top:4px; }
+      .workspace-nav { display:flex; gap:24px; flex-wrap:wrap; padding:16px 0; border-bottom:1px solid var(--line); }
+      .workspace-nav a { color:var(--muted); text-decoration:none; font-size:13px; }
+      .workspace-nav a[aria-current="page"] { color:var(--accent); font-weight:700; }
+      .panel { border:0; border-radius:0; background:#fff; padding:24px; min-width:0; }
+      .metrics,.stats { gap:0; border-bottom:1px solid var(--line); }
+      .metrics>.card,.metric,.stat { border:0; border-radius:0; border-right:1px solid var(--line); background:transparent; padding:18px 24px; }
+      .metrics>:last-child,.stats>:last-child { border-right:0; }
+      .metric strong,.stat strong,.card strong { font-variant-numeric:tabular-nums; }
+      .grid,.layout,main { min-width:0; }
+      input,select,textarea { min-width:0; font-weight:400; }
+      button,.button { font-weight:600; transition:background .15s; }
+      button:hover,.button:hover { filter:brightness(.94); }
+      button:disabled { opacity:.45; cursor:not-allowed; }
+      :focus-visible { outline:3px solid #087f75; outline-offset:3px; }
+      th { background:#f5f7f8; white-space:nowrap; text-transform:none; }
+      td { overflow-wrap:anywhere; }
+      tbody tr:hover { background:#f5faf9; }
+      .badge,.chip,.tag { border-radius:4px; }
+      .ghost,.move button { background:#e6f3f0; color:#086b62; }
+      .bar { border-radius:3px; }
+      .area { fill:#e6f3f0; }
+      .table-wrap { max-width:100%; }
+      @media(max-width:980px) { .shell { width:calc(100% - 32px); } .metrics,.stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+      @media(max-width:560px) { h1 { font-size:23px; } header { padding:18px 0; } .panel { padding:16px; } .workspace-nav { gap:12px; } .metrics>.card,.metric,.stat { padding:14px 10px; } .metric strong,.stat strong,.card strong { font-size:25px; } }
+      @media(prefers-reduced-motion:reduce) { * { transition:none!important; } }
+      .project { padding:0; overflow:hidden; gap:0; }
+      .project h3,.project p,.project .project-link { margin-left:20px; margin-right:20px; }
+      .project h3 { margin-top:18px; }
+      .project .tags { padding:18px 20px 20px; }
+      .project-preview { display:block; width:100%; height:auto; aspect-ratio:3/2; object-fit:contain; background:#f4f6f7; border-bottom:1px solid var(--line); }
+      header { justify-content:space-between; }
+      @media(max-width:860px) { header { align-items:flex-start; } }
     </style>
 </head>
 <body>
@@ -283,11 +325,11 @@
         <header>
             <div class="brand">
                 <strong>徐铭杰</strong>
-                <span>Product-minded Frontend / AI Apps</span>
+                <span>前端开发 · 产品设计 · AI 应用</span>
             </div>
-            <nav aria-label="Primary navigation">
-                <a href="#projects">Projects</a>
-                <a href="#plan">Build Plan</a>
+            <nav aria-label="主导航">
+                <a href="#projects">项目作品</a>
+                
                 <a href="https://github.com/MmIiNnGgXx">GitHub</a>
             </nav>
         </header>
@@ -295,142 +337,89 @@
         <main>
             <section class="hero">
                 <div>
-                    <h1>把模糊需求做成可用、清晰、能展示判断力的产品界面。</h1>
-                    <p class="lead">
-                        我正在建设一组公开 GitHub 作品：AI 求职工具、投递看板、产品数据分析、
-                        CMS 后台和离线效率应用。重点展示前端工程、产品结构、UI 细节和 AI 应用落地。
-                    </p>
+                    <h1>徐铭杰<span class="subtitle">前端开发 · 产品界面 · AI 应用</span></h1>
+                    
                     <div class="actions">
-                        <a class="button primary" href="#projects">查看项目矩阵</a>
+                        <a class="button primary" href="#projects">查看项目</a>
                         <a class="button" href="https://github.com/MmIiNnGgXx/personal-website">查看源码</a>
                     </div>
                 </div>
 
-                <aside class="status" aria-label="Portfolio status">
-                    <div class="status-row"><span>Current focus</span><strong>Portfolio MVP</strong></div>
-                    <div class="status-row"><span>Stack</span><strong>Static / Next.js ready</strong></div>
-                    <div class="status-row"><span>Public repos</span><strong>Planned</strong></div>
-                    <div class="status-row"><span>Demo target</span><strong>GitHub Pages / Vercel</strong></div>
-                </aside>
+                
             </section>
 
             <section id="projects">
-                <div class="section-head">
-                    <h2>Selected Product Projects</h2>
-                    <p>
-                        每个项目都控制在可运行 MVP 范围内：一个明确用户场景、一个完整核心流程、
-                        一份清晰 README 和一个可访问 Demo。
-                    </p>
-                </div>
+                <div class="section-head"><h2>项目作品 <span class="subtitle">Selected work</span></h2></div>
 
                 <div class="grid">
                     <article class="project">
                         <div>
-                            <h3>AI Resume Reviewer</h3>
-                            <p>粘贴简历和岗位 JD，输出匹配分、缺失关键词、结构反馈和可执行修改建议。</p>
-                            <a class="project-link" href="ai-resume-reviewer/">Open demo</a>
+                            <img class="project-preview" src="ai-resume-reviewer.jpg" alt="简历诊断页面，包含输入区、关键词匹配分和能力维度" width="1440" height="960">
+                            <h3>简历与岗位诊断</h3>
+                            <p>对照岗位要求检查关键词覆盖，查看能力缺口、项目表达模板与诊断报告。</p>
+                            <a class="project-link" href="ai-resume-reviewer/">打开项目</a>
                         </div>
                         <div class="tags">
-                            <span class="tag">AI Product</span>
-                            <span class="tag">Resume</span>
-                            <span class="tag">Live MVP</span>
+                            <span class="tag">简历诊断</span>
+                            <span class="tag">岗位匹配</span>
+                            <span class="tag">可体验</span>
                         </div>
                     </article>
 
                     <article class="project">
                         <div>
-                            <h3>Job Search Dashboard</h3>
-                            <p>管理职位、投递阶段、面试、跟进任务和求职统计，让求职过程像产品工作台。</p>
-                            <a class="project-link" href="job-search-dashboard/">Open demo</a>
+                            <img class="project-preview" src="job-search-dashboard.jpg" alt="求职工作台，包含职位表单、搜索和五阶段看板" width="1440" height="960">
+                            <h3>求职管理工作台</h3>
+                            <p>集中管理投递阶段与跟进备注，支持职位搜索、筛选、编辑和本地保存。</p>
+                            <a class="project-link" href="job-search-dashboard/">打开项目</a>
                         </div>
                         <div class="tags">
-                            <span class="tag">Kanban</span>
-                            <span class="tag">Dashboard</span>
-                            <span class="tag">Live MVP</span>
+                            <span class="tag">阶段管理</span>
+                            <span class="tag">工作台</span>
+                            <span class="tag">可体验</span>
                         </div>
                     </article>
 
                     <article class="project">
                         <div>
-                            <h3>Product Analytics Dashboard</h3>
-                            <p>展示增长、激活、漏斗、留存和事件明细，体现指标设计与数据界面能力。</p>
-                            <a class="project-link" href="product-analytics-dashboard/">Open demo</a>
+                            <img class="project-preview" src="product-analytics-dashboard.jpg" alt="产品数据页面，包含分群筛选、激活趋势和转化漏斗" width="1440" height="960" loading="lazy">
+                            <h3>产品数据分析</h3>
+                            <p>按用户分群与时间范围查看注册、激活、付费漏斗和事件汇总。</p>
+                            <a class="project-link" href="product-analytics-dashboard/">打开项目</a>
                         </div>
                         <div class="tags">
-                            <span class="tag">Analytics</span>
-                            <span class="tag">Charts</span>
-                            <span class="tag">Live MVP</span>
+                            <span class="tag">数据分析</span>
+                            <span class="tag">可视化</span>
+                            <span class="tag">可体验</span>
                         </div>
                     </article>
 
                     <article class="project">
                         <div>
-                            <h3>Commerce CMS Dashboard</h3>
-                            <p>轻量商品、订单、客户和设置后台，强调表格、表单、状态和后台信息架构。</p>
-                            <a class="project-link" href="commerce-cms-dashboard/">Open demo</a>
+                            <img class="project-preview" src="commerce-cms-dashboard.jpg" alt="商品运营页面，包含经营指标、商品表单和业务表格" width="1440" height="960" loading="lazy">
+                            <h3>商品运营后台</h3>
+                            <p>管理商品资料和库存，筛选订单状态，查看客户消费与经营指标。</p>
+                            <a class="project-link" href="commerce-cms-dashboard/">打开项目</a>
                         </div>
                         <div class="tags">
-                            <span class="tag">Admin</span>
-                            <span class="tag">Forms</span>
-                            <span class="tag">Live MVP</span>
+                            <span class="tag">运营管理</span>
+                            <span class="tag">表格表单</span>
+                            <span class="tag">可体验</span>
                         </div>
                     </article>
 
-                    <article class="project">
-                        <div>
-                            <h3>Habit Focus Tracker</h3>
-                            <p>离线优先的习惯与专注追踪器，包含热力图、连续天数和本地数据保存。</p>
-                        </div>
-                        <div class="tags">
-                            <span class="tag">Offline-first</span>
-                            <span class="tag">PWA</span>
-                            <span class="tag todo">Planned</span>
-                        </div>
-                    </article>
+                    
 
-                    <article class="project">
-                        <div>
-                            <h3>Personal Website</h3>
-                            <p>当前页面是作品集入口，后续会连接每个项目的 Demo、源码、截图和设计取舍。</p>
-                        </div>
-                        <div class="tags">
-                            <span class="tag">Portfolio</span>
-                            <span class="tag">GitHub Pages</span>
-                            <span class="tag">Live</span>
-                        </div>
-                    </article>
+                    
                 </div>
             </section>
 
-            <section id="plan">
-                <div class="section-head">
-                    <h2>Build Plan</h2>
-                    <p>第一批先做能和求职强相关的项目，再补数据和后台类项目。</p>
-                </div>
-                <div class="timeline">
-                    <div class="step">
-                        <strong>Step 1</strong>
-                        <p>完善个人主站：项目矩阵、作品详情模板、简历入口和 GitHub 链接。</p>
-                    </div>
-                    <div class="step">
-                        <strong>Step 2</strong>
-                        <p>实现 AI Resume Reviewer：先用本地规则评分，后续可接 AI key 优化文案。</p>
-                    </div>
-                    <div class="step">
-                        <strong>Step 3</strong>
-                        <p>实现 Job Search Dashboard：职位状态流、跟进提醒、统计卡和本地保存。</p>
-                    </div>
-                    <div class="step">
-                        <strong>Step 4</strong>
-                        <p>补齐 Analytics、CMS 和 Habit Tracker，统一 README、截图和部署链接。</p>
-                    </div>
-                </div>
-            </section>
+            
         </main>
 
         <footer>
-            <span>Built by 徐铭杰</span>
-            <span>Frontend Engineering / Product UI / AI Applications</span>
+            <span>作者： 徐铭杰</span>
+            <span>前端工程 · 产品界面 · AI 应用</span>
         </footer>
     </div>
 </body>

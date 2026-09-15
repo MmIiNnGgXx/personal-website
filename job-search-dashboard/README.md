@@ -1,30 +1,23 @@
-# Job Search Dashboard
+# 求职管理工作台
 
-Job Search Dashboard is a local-first workspace for tracking job applications, interview stages, and follow-up actions.
+中文优先的可交互前端作品，英文仅作辅助标题。
 
-## MVP
+[在线体验](https://mmiinnggxx.github.io/personal-website/job-search-dashboard/)
 
-- Add applications
-- Track status across Saved, Applied, Interview, Offer, Rejected
-- Move cards between stages
-- Show application stats
-- Persist data in `localStorage`
+## 已实现
 
-## Tech
+新增、编辑、删除职位，搜索公司或岗位，筛选投递阶段，阶段流转，本地保存。
 
-- HTML
-- CSS
-- JavaScript
-- GitHub Pages
+## 技术与运行
 
-## Why This Exists
+HTML、CSS、原生 JavaScript。直接打开 index.html，或通过 GitHub Pages 访问。无安装与构建步骤。
 
-The project demonstrates product workflow design: status modeling, dashboard hierarchy, local persistence, and a job-search domain that matches the portfolio story.
+## 当前边界
 
-## Next
+数据保存在当前浏览器，无账号同步、日期提醒或云数据库。示例公司为虚构。
 
-- Add editing and deletion
-- Add due dates
-- Add filters
-- Add interview notes timeline
-- Add import/export JSON
+## 验证
+
+在原工作区通过 Playwright 验证 1440px 桌面与 390px 手机布局、核心交互及控制台错误。
+
+[优化说明与验收方法](../docs/UI_OPTIMIZATION_GUIDE.md)

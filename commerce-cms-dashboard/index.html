@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Commerce CMS Dashboard</title>
+    <title>商品运营后台</title>
     <style>
       :root {
         --bg: #f6f7f9;
@@ -56,50 +56,86 @@
       @media (max-width: 560px) {
         .metrics { grid-template-columns: 1fr; }
       }
-    </style>
+    
+      :root { --bg:#f4f6f7; --text:#202629; --ink:#202629; --muted:#596469; --line:#dde3e5; --accent:#087f75; --blue:#087f75; --accent-soft:#e6f3f0; font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+      body { font-size:14px; line-height:1.6; }
+      .shell { width:min(1440px,calc(100% - 64px)); }
+      header { padding:24px 0; align-items:center; gap:20px; }
+      h1 { font-size:28px; line-height:1.4; overflow-wrap:anywhere; }
+      h2 { font-size:17px; line-height:1.5; }
+      h3 { line-height:1.5; }
+      .subtitle { display:block; color:var(--muted); font-size:12px; font-weight:400; margin-top:4px; }
+      .workspace-nav { display:flex; gap:24px; flex-wrap:wrap; padding:16px 0; border-bottom:1px solid var(--line); }
+      .workspace-nav a { color:var(--muted); text-decoration:none; font-size:13px; }
+      .workspace-nav a[aria-current="page"] { color:var(--accent); font-weight:700; }
+      .panel { border:0; border-radius:0; background:#fff; padding:24px; min-width:0; }
+      .metrics,.stats { gap:0; border-bottom:1px solid var(--line); }
+      .metrics>.card,.metric,.stat { border:0; border-radius:0; border-right:1px solid var(--line); background:transparent; padding:18px 24px; }
+      .metrics>:last-child,.stats>:last-child { border-right:0; }
+      .metric strong,.stat strong,.card strong { font-variant-numeric:tabular-nums; }
+      .grid,.layout,main { min-width:0; }
+      input,select,textarea { min-width:0; font-weight:400; }
+      button,.button { font-weight:600; transition:background .15s; }
+      button:hover,.button:hover { filter:brightness(.94); }
+      button:disabled { opacity:.45; cursor:not-allowed; }
+      :focus-visible { outline:3px solid #087f75; outline-offset:3px; }
+      th { background:#f5f7f8; white-space:nowrap; text-transform:none; }
+      td { overflow-wrap:anywhere; }
+      tbody tr:hover { background:#f5faf9; }
+      .badge,.chip,.tag { border-radius:4px; }
+      .ghost,.move button { background:#e6f3f0; color:#086b62; }
+      .bar { border-radius:3px; }
+      .area { fill:#e6f3f0; }
+      .table-wrap { max-width:100%; }
+      @media(max-width:980px) { .shell { width:calc(100% - 32px); } .metrics,.stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+      @media(max-width:560px) { h1 { font-size:23px; } header { padding:18px 0; } .panel { padding:16px; } .workspace-nav { gap:12px; } .metrics>.card,.metric,.stat { padding:14px 10px; } .metric strong,.stat strong,.card strong { font-size:25px; } }
+      @media(prefers-reduced-motion:reduce) { * { transition:none!important; } }
+
+</style>
   </head>
   <body>
     <div class="shell">
+<nav class="workspace-nav" aria-label="作品导航"><a href="../">徐铭杰 / 作品集</a><a href="../ai-resume-reviewer/">简历诊断</a><a href="../job-search-dashboard/">求职管理</a><a href="../product-analytics-dashboard/">数据分析</a><a href="../commerce-cms-dashboard/" aria-current="page">商品运营</a></nav>
       <header>
         <div>
-          <h1>Commerce CMS Dashboard</h1>
-          <p class="lead">一个轻量业务后台，覆盖商品、订单、客户和设置入口，重点展示表格、表单、状态和运营信息架构。</p>
+          <h1>商品运营后台<span class="subtitle">Commerce Admin</span></h1>
+          
         </div>
         <div class="actions">
-          <select id="statusFilter" aria-label="Order status filter">
-            <option value="all">All orders</option>
-            <option value="Paid">Paid</option>
-            <option value="Packed">Packed</option>
-            <option value="Risk">Risk</option>
+          <select id="statusFilter" aria-label="订单状态筛选">
+            <option value="all">全部订单</option>
+            <option value="已支付">已支付</option>
+            <option value="待发货">待发货</option>
+            <option value="需审核">需审核</option>
           </select>
-          <button id="seed">Reset Demo</button>
+          <button id="seed">重置示例数据</button>
         </div>
       </header>
 
-      <section class="metrics" aria-label="Store metrics">
-        <article class="card"><span>Revenue</span><strong id="revenue">$42.6k</strong></article>
-        <article class="card"><span>Orders</span><strong id="ordersCount">128</strong></article>
-        <article class="card"><span>Products</span><strong id="productsCount">6</strong></article>
-        <article class="card"><span>Low Stock</span><strong id="lowStock">2</strong></article>
+      <section class="metrics" aria-label="经营指标">
+        <article class="card"><span>订单总额</span><strong id="revenue">$42.6k</strong></article>
+        <article class="card"><span>订单</span><strong id="ordersCount">128</strong></article>
+        <article class="card"><span>商品</span><strong id="productsCount">6</strong></article>
+        <article class="card"><span>库存预警</span><strong id="lowStock">2</strong></article>
       </section>
 
       <main class="layout">
         <aside class="panel">
-          <h2>Add Product</h2>
+          <h2>新增商品</h2>
           <form id="productForm">
-            <label>Name <input id="name" required value="Everyday Tote" /></label>
-            <label>Category <input id="category" required value="Bags" /></label>
-            <label>Price <input id="price" required type="number" value="68" /></label>
-            <label>Stock <input id="stock" required type="number" value="24" /></label>
-            <button>Add Product</button>
+            <label>商品名称 <input id="name" required value="日用帆布袋" /></label>
+            <label>商品分类 <input id="category" required value="箱包" /></label>
+            <label>价格（元） <input id="price" required type="number" min="0" step="0.01" value="68" /></label>
+            <label>库存（件） <input id="stock" required type="number" min="0" step="1" value="24" /></label>
+            <button>新增商品</button>
           </form>
         </aside>
 
         <section class="panel">
-          <div class="tabs" aria-label="Dashboard sections">
-            <button class="tab active" data-view="products">Products</button>
-            <button class="tab" data-view="orders">Orders</button>
-            <button class="tab" data-view="customers">Customers</button>
+          <div class="tabs" aria-label="业务视图">
+            <button class="tab active" data-view="products">商品</button>
+            <button class="tab" data-view="orders">订单</button>
+            <button class="tab" data-view="customers">客户</button>
           </div>
           <div class="table-wrap">
             <table>
@@ -113,56 +149,60 @@
 
     <script>
       const seedProducts = [
-        ["Desk Lamp", "Home", 48, 12],
-        ["Studio Chair", "Furniture", 189, 5],
-        ["Canvas Backpack", "Bags", 82, 31],
-        ["Notebook Set", "Stationery", 18, 64],
-        ["Ceramic Mug", "Kitchen", 22, 3],
-        ["Wireless Stand", "Tech", 54, 7]
+        ["阅读台灯", "家居", 48, 12],
+        ["工作椅", "家具", 189, 5],
+        ["帆布双肩包", "箱包", 82, 31],
+        ["笔记本套装", "文具", 18, 64],
+        ["陶瓷杯", "厨具", 22, 3],
+        ["无线充电支架", "数码", 54, 7]
       ];
       const orders = [
-        ["#1042", "Mia Chen", "$248", "Paid"],
-        ["#1041", "Leo Wang", "$68", "Packed"],
-        ["#1040", "Ava Lin", "$411", "Risk"],
-        ["#1039", "Noah Xu", "$126", "Paid"],
-        ["#1038", "Ivy Zhou", "$42", "Packed"]
+        ["#1042", "陈晓", "$248", "已支付"],
+        ["#1041", "王磊", "$68", "待发货"],
+        ["#1040", "林悦", "$411", "需审核"],
+        ["#1039", "徐宁", "$126", "已支付"],
+        ["#1038", "周芸", "$42", "待发货"]
       ];
       const customers = [
-        ["Mia Chen", "3 orders", "$620", "VIP"],
-        ["Leo Wang", "1 order", "$68", "New"],
-        ["Ava Lin", "6 orders", "$1,420", "Risk"],
-        ["Noah Xu", "2 orders", "$318", "Repeat"]
+        ["陈晓", "3 笔订单", "$620", "高价值客户"],
+        ["王磊", "1 笔订单", "$68", "新客户"],
+        ["林悦", "6 笔订单", "$1,420", "需审核"],
+        ["徐宁", "2 笔订单", "$318", "复购客户"]
       ];
-      let products = JSON.parse(localStorage.getItem("cms-products") || "null") || seedProducts;
+      let products;
+      try { products = JSON.parse(localStorage.getItem("cms-products") || "null") || structuredClone(seedProducts); if(!Array.isArray(products)) throw Error(); } catch { products = structuredClone(seedProducts); }
+      const escape = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
       let view = "products";
 
       function badgeClass(value) {
-        return value === "Risk" ? "bad" : value === "Packed" || value === "New" ? "warn" : "good";
+        return value === "需审核" ? "bad" : value === "待发货" || value === "新客户" ? "warn" : "good";
       }
 
       function render() {
+        document.querySelector("#ordersCount").textContent = orders.length;
+        document.querySelector("#revenue").textContent = "¥" + orders.reduce((sum, order) => sum + Number(order[2].slice(1)), 0).toLocaleString("zh-CN");
         document.querySelector("#productsCount").textContent = products.length;
         document.querySelector("#lowStock").textContent = products.filter((p) => p[3] <= 7).length;
         document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab.dataset.view === view));
 
         if (view === "products") {
-          document.querySelector("#head").innerHTML = "<tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th></tr>";
+          document.querySelector("#head").innerHTML = "<tr><th>商品</th><th>分类</th><th>价格（元）</th><th>库存</th><th>状态</th></tr>";
           document.querySelector("#body").innerHTML = products.map(([name, category, price, stock]) => `
-            <tr><td>${name}</td><td>${category}</td><td>$${price}</td><td>${stock}</td><td><span class="badge ${stock <= 7 ? "warn" : "good"}">${stock <= 7 ? "Low stock" : "Active"}</span></td></tr>
+            <tr><td>${escape(name)}</td><td>${escape(category)}</td><td>¥${price}</td><td>${stock}</td><td><span class="badge ${stock <= 7 ? "warn" : "good"}">${stock <= 7 ? "库存不足" : "在售"}</span></td></tr>
           `).join("");
         }
 
         if (view === "orders") {
           const filter = document.querySelector("#statusFilter").value;
           const visible = filter === "all" ? orders : orders.filter((order) => order[3] === filter);
-          document.querySelector("#head").innerHTML = "<tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th></tr>";
+          document.querySelector("#head").innerHTML = "<tr><th>订单号</th><th>客户</th><th>金额</th><th>状态</th></tr>";
           document.querySelector("#body").innerHTML = visible.map(([id, customer, total, status]) => `
             <tr><td>${id}</td><td>${customer}</td><td>${total}</td><td><span class="badge ${badgeClass(status)}">${status}</span></td></tr>
           `).join("");
         }
 
         if (view === "customers") {
-          document.querySelector("#head").innerHTML = "<tr><th>Customer</th><th>Orders</th><th>Lifetime Value</th><th>Segment</th></tr>";
+          document.querySelector("#head").innerHTML = "<tr><th>客户</th><th>订单</th><th>累计消费</th><th>分群</th></tr>";
           document.querySelector("#body").innerHTML = customers.map(([name, count, value, segment]) => `
             <tr><td>${name}</td><td>${count}</td><td>${value}</td><td><span class="badge ${badgeClass(segment)}">${segment}</span></td></tr>
           `).join("");
@@ -187,7 +227,8 @@
         render();
       });
       document.querySelector("#seed").addEventListener("click", () => {
-        products = seedProducts;
+        if(!confirm("重置会清除你新增的商品，是否继续？")) return;
+        products = structuredClone(seedProducts);
         localStorage.setItem("cms-products", JSON.stringify(products));
         render();
       });

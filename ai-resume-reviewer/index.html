@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI 简历与作品集诊断台</title>
+    <title>简历与岗位诊断</title>
     <style>
       :root {
         --bg: #f5f6f8;
@@ -66,21 +66,52 @@
         header, main, .grid, .metrics { grid-template-columns: 1fr; }
         .form { position: static; }
       }
-    </style>
+    
+      :root { --bg:#f4f6f7; --text:#202629; --ink:#202629; --muted:#596469; --line:#dde3e5; --accent:#087f75; --blue:#087f75; --accent-soft:#e6f3f0; font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+      body { font-size:14px; line-height:1.6; }
+      .shell { width:min(1440px,calc(100% - 64px)); }
+      header { padding:24px 0; align-items:center; gap:20px; }
+      h1 { font-size:28px; line-height:1.4; overflow-wrap:anywhere; }
+      h2 { font-size:17px; line-height:1.5; }
+      h3 { line-height:1.5; }
+      .subtitle { display:block; color:var(--muted); font-size:12px; font-weight:400; margin-top:4px; }
+      .workspace-nav { display:flex; gap:24px; flex-wrap:wrap; padding:16px 0; border-bottom:1px solid var(--line); }
+      .workspace-nav a { color:var(--muted); text-decoration:none; font-size:13px; }
+      .workspace-nav a[aria-current="page"] { color:var(--accent); font-weight:700; }
+      .panel { border:0; border-radius:0; background:#fff; padding:24px; min-width:0; }
+      .metrics,.stats { gap:0; border-bottom:1px solid var(--line); }
+      .metrics>.card,.metric,.stat { border:0; border-radius:0; border-right:1px solid var(--line); background:transparent; padding:18px 24px; }
+      .metrics>:last-child,.stats>:last-child { border-right:0; }
+      .metric strong,.stat strong,.card strong { font-variant-numeric:tabular-nums; }
+      .grid,.layout,main { min-width:0; }
+      input,select,textarea { min-width:0; font-weight:400; }
+      button,.button { font-weight:600; transition:background .15s; }
+      button:hover,.button:hover { filter:brightness(.94); }
+      button:disabled { opacity:.45; cursor:not-allowed; }
+      :focus-visible { outline:3px solid #087f75; outline-offset:3px; }
+      th { background:#f5f7f8; white-space:nowrap; text-transform:none; }
+      td { overflow-wrap:anywhere; }
+      tbody tr:hover { background:#f5faf9; }
+      .badge,.chip,.tag { border-radius:4px; }
+      .ghost,.move button { background:#e6f3f0; color:#086b62; }
+      .bar { border-radius:3px; }
+      .area { fill:#e6f3f0; }
+      .table-wrap { max-width:100%; }
+      @media(max-width:980px) { .shell { width:calc(100% - 32px); } .metrics,.stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+      @media(max-width:560px) { h1 { font-size:23px; } header { padding:18px 0; } .panel { padding:16px; } .workspace-nav { gap:12px; } .metrics>.card,.metric,.stat { padding:14px 10px; } .metric strong,.stat strong,.card strong { font-size:25px; } }
+      @media(prefers-reduced-motion:reduce) { * { transition:none!important; } }
+header { display:block; } main { grid-template-columns:380px minmax(0,1fr); } @media(max-width:980px){ main{grid-template-columns:1fr;} }
+</style>
   </head>
   <body>
     <div class="shell">
+<nav class="workspace-nav" aria-label="作品导航"><a href="../">徐铭杰 / 作品集</a><a href="../ai-resume-reviewer/" aria-current="page">简历诊断</a><a href="../job-search-dashboard/">求职管理</a><a href="../product-analytics-dashboard/">数据分析</a><a href="../commerce-cms-dashboard/">商品运营</a></nav>
       <header>
         <div>
-          <h1>AI 简历与作品集诊断台</h1>
-          <p class="lead">面向中文求职场景的简历/JD/作品集匹配工具。它不只是算关键词，而是把岗位要求拆成能力维度，再给出项目级改造建议和可直接写进简历的表达。</p>
+          <h1>简历与岗位诊断<span class="subtitle">Resume Review</span></h1>
+          
         </div>
-        <aside class="brief" aria-label="项目说明">
-          <div class="brief-row"><span>定位</span><strong>求职效率产品</strong></div>
-          <div class="brief-row"><span>适用岗位</span><strong>前端 / AI 应用 / 产品工程</strong></div>
-          <div class="brief-row"><span>MVP 能力</span><strong>诊断 + 建议 + 导出</strong></div>
-          <div class="brief-row"><span>数据方式</span><strong>浏览器本地处理</strong></div>
-        </aside>
+        
       </header>
 
       <main>
@@ -96,7 +127,7 @@
           <label>你的简历/项目描述
             <textarea id="resume">熟悉 React、TypeScript、Next.js、Tailwind CSS，做过作品集网站、数据看板、表单、响应式页面和 AI 辅助工作流。了解 GitHub、Vercel、可访问性、产品思维和前端工程化。</textarea>
           </label>
-          <label>目标岗位 JD
+          <label>岗位要求（JD）
             <textarea id="jd">负责前端产品开发，要求 React、TypeScript、Next.js、数据看板、表格表单、接口联调、组件化、性能优化、良好的 UI 审美、可访问性意识，能快速完成 AI 产品原型。</textarea>
           </label>
           <div class="actions">
@@ -107,7 +138,7 @@
 
         <section class="stack">
           <section class="metrics" aria-label="诊断指标">
-            <article class="metric"><span>岗位匹配分</span><strong id="score">0</strong></article>
+            <article class="metric"><span>关键词匹配分</span><strong id="score">0</strong></article>
             <article class="metric"><span>关键词覆盖</span><strong id="coverage">0/0</strong></article>
             <article class="metric"><span>优先修改项</span><strong id="todoCount">0</strong></article>
           </section>
@@ -134,7 +165,7 @@
               <ul class="list" id="portfolioAdvice"></ul>
             </article>
             <article class="card">
-              <h2>简历改写示例</h2>
+              <h2>项目表达模板</h2>
               <ul class="list" id="rewriteAdvice"></ul>
             </article>
           </section>
@@ -161,10 +192,11 @@
         return text.toLowerCase().includes(word.toLowerCase());
       }
 
-      function analyze() {
+      function analyze(recordHistory = true) {
         const role = document.querySelector("#role").value;
         const resume = document.querySelector("#resume").value;
         const jd = document.querySelector("#jd").value;
+        if (!resume.trim() || !jd.trim()) { alert("请填写简历内容和岗位要求。"); return; }
         const required = allKeywords.filter((word) => has(jd, word));
         const matched = required.filter((word) => has(resume, word));
         const missing = required.filter((word) => !has(resume, word));
@@ -174,13 +206,13 @@
         document.querySelector("#score").textContent = score;
         document.querySelector("#score").className = score >= 75 ? "status-good" : score >= 50 ? "status-mid" : "status-low";
         document.querySelector("#coverage").textContent = `${matched.length}/${required.length}`;
-        document.querySelector("#todoCount").textContent = Math.max(3, missing.length);
+        document.querySelector("#todoCount").textContent = missing.length;
         renderDimensions(resume, jd);
         renderChips("#matched", matched, "good");
         renderChips("#missing", missing, "warn");
         renderPortfolioAdvice(missing);
         renderRewriteAdvice(role, missing);
-        saveHistory(result);
+        if (recordHistory) saveHistory(result);
         renderHistory();
       }
 
@@ -188,9 +220,9 @@
         document.querySelector("#dimensions").innerHTML = Object.entries(dimensions).map(([name, words]) => {
           const required = words.filter((word) => has(jd, word));
           const matched = required.filter((word) => has(resume, word));
-          const pct = required.length ? Math.round((matched.length / required.length) * 100) : 70;
+          const pct = required.length ? Math.round((matched.length / required.length) * 100) : 0;
           return `<div class="bar-row">
-            <div class="bar-label"><span>${name}</span><strong>${pct}%</strong></div>
+            <div class="bar-label"><span>${name}</span><strong>${required.length ? pct + "%" : "未涉及"}</strong></div>
             <div class="bar"><span style="width:${pct}%"></span></div>
           </div>`;
         }).join("");
@@ -214,15 +246,16 @@
 
       function renderRewriteAdvice(role, missing) {
         const examples = [
-          `面向${role}岗位，独立设计并实现求职作品集矩阵，覆盖 AI 分析、投递看板、数据看板和 CMS 后台。`,
-          `使用 React/TypeScript 思维拆解复杂页面状态，完成表单、筛选、指标卡、响应式布局和本地数据持久化。`,
+          `面向${role}岗位，选取已完成的 [项目名称]，说明你的职责、关键技术决策和可验证成果。`,
+          `围绕 [真实用户问题]，使用 [实际技术栈] 完成 [核心流程]，通过 [测试方法] 验证 [结果]。`,
           `针对岗位关键词缺口 ${missing.slice(0, 4).join("、") || "较少"}，补充项目证据和可访问 Demo。`
         ];
         document.querySelector("#rewriteAdvice").innerHTML = examples.map((item) => `<li>${item}</li>`).join("");
       }
 
+      function readHistory() { try { const items = JSON.parse(localStorage.getItem("resume-review-history") || "[]"); return Array.isArray(items) ? items.filter(i => i && Array.isArray(i.missing)).slice(0,5) : []; } catch { return []; } }
       function saveHistory(result) {
-        const history = JSON.parse(localStorage.getItem("resume-review-history") || "[]");
+        const history = readHistory();
         history.unshift(result);
         localStorage.setItem("resume-review-history", JSON.stringify(history.slice(0, 5)));
       }
@@ -230,7 +263,7 @@
       function renderHistory() {
         const history = JSON.parse(localStorage.getItem("resume-review-history") || "[]");
         document.querySelector("#history").innerHTML = history.length
-          ? history.map((item) => `<button type="button">${item.at} · ${item.role} · ${item.score} 分 · 缺口 ${item.missing.length} 项</button>`).join("")
+          ? history.map((item) => `<div class="history-item">${item.at} · ${item.role} · ${item.score} 分 · 缺口 ${item.missing.length} 项</div>`).join("")
           : "<span class=\"chip warn\">暂无历史</span>";
       }
 
@@ -249,7 +282,7 @@
 
       document.querySelector("#analyze").addEventListener("click", analyze);
       document.querySelector("#export").addEventListener("click", exportReport);
-      analyze();
+      analyze(false);
     </script>
   </body>
 </html>

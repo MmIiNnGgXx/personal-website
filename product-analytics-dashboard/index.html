@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Product Analytics Dashboard</title>
+    <title>产品数据分析</title>
     <style>
       :root {
         --bg: #f6f7f9;
@@ -56,41 +56,77 @@
         header { flex-direction: column; }
         .metrics, .grid { grid-template-columns: 1fr; }
       }
-    </style>
+    
+      :root { --bg:#f4f6f7; --text:#202629; --ink:#202629; --muted:#596469; --line:#dde3e5; --accent:#087f75; --blue:#087f75; --accent-soft:#e6f3f0; font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+      body { font-size:14px; line-height:1.6; }
+      .shell { width:min(1440px,calc(100% - 64px)); }
+      header { padding:24px 0; align-items:center; gap:20px; }
+      h1 { font-size:28px; line-height:1.4; overflow-wrap:anywhere; }
+      h2 { font-size:17px; line-height:1.5; }
+      h3 { line-height:1.5; }
+      .subtitle { display:block; color:var(--muted); font-size:12px; font-weight:400; margin-top:4px; }
+      .workspace-nav { display:flex; gap:24px; flex-wrap:wrap; padding:16px 0; border-bottom:1px solid var(--line); }
+      .workspace-nav a { color:var(--muted); text-decoration:none; font-size:13px; }
+      .workspace-nav a[aria-current="page"] { color:var(--accent); font-weight:700; }
+      .panel { border:0; border-radius:0; background:#fff; padding:24px; min-width:0; }
+      .metrics,.stats { gap:0; border-bottom:1px solid var(--line); }
+      .metrics>.card,.metric,.stat { border:0; border-radius:0; border-right:1px solid var(--line); background:transparent; padding:18px 24px; }
+      .metrics>:last-child,.stats>:last-child { border-right:0; }
+      .metric strong,.stat strong,.card strong { font-variant-numeric:tabular-nums; }
+      .grid,.layout,main { min-width:0; }
+      input,select,textarea { min-width:0; font-weight:400; }
+      button,.button { font-weight:600; transition:background .15s; }
+      button:hover,.button:hover { filter:brightness(.94); }
+      button:disabled { opacity:.45; cursor:not-allowed; }
+      :focus-visible { outline:3px solid #087f75; outline-offset:3px; }
+      th { background:#f5f7f8; white-space:nowrap; text-transform:none; }
+      td { overflow-wrap:anywhere; }
+      tbody tr:hover { background:#f5faf9; }
+      .badge,.chip,.tag { border-radius:4px; }
+      .ghost,.move button { background:#e6f3f0; color:#086b62; }
+      .bar { border-radius:3px; }
+      .area { fill:#e6f3f0; }
+      .table-wrap { max-width:100%; }
+      @media(max-width:980px) { .shell { width:calc(100% - 32px); } .metrics,.stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+      @media(max-width:560px) { h1 { font-size:23px; } header { padding:18px 0; } .panel { padding:16px; } .workspace-nav { gap:12px; } .metrics>.card,.metric,.stat { padding:14px 10px; } .metric strong,.stat strong,.card strong { font-size:25px; } }
+      @media(prefers-reduced-motion:reduce) { * { transition:none!important; } }
+
+</style>
   </head>
   <body>
     <div class="shell">
+<nav class="workspace-nav" aria-label="作品导航"><a href="../">徐铭杰 / 作品集</a><a href="../ai-resume-reviewer/">简历诊断</a><a href="../job-search-dashboard/">求职管理</a><a href="../product-analytics-dashboard/" aria-current="page">数据分析</a><a href="../commerce-cms-dashboard/">商品运营</a></nav>
       <header>
         <div>
-          <h1>Product Analytics Dashboard</h1>
-          <p class="lead">一个产品数据工作台，把增长、激活、转化漏斗、留存和事件明细放在可扫描的界面里。</p>
+          <h1>产品数据分析<span class="subtitle">Product Analytics · 示例数据</span></h1>
+          
         </div>
-        <div class="toolbar" aria-label="Dashboard filters">
-          <select id="segment">
-            <option>All users</option>
-            <option>New users</option>
-            <option>Returning users</option>
+        <div class="toolbar" aria-label="数据筛选">
+          <select id="segment" aria-label="用户分群">
+            <option>全部用户</option>
+            <option>新用户</option>
+            <option>回访用户</option>
           </select>
-          <select id="range">
-            <option>Last 30 days</option>
-            <option>Last 7 days</option>
-            <option>This quarter</option>
+          <select id="range" aria-label="时间范围">
+            <option>近 30 天</option>
+            <option>近 7 天</option>
+            <option>本季度</option>
           </select>
-          <button id="refresh">Refresh</button>
+          <button id="refresh">刷新数据</button>
         </div>
       </header>
 
-      <section class="metrics" aria-label="Key metrics">
-        <article class="card"><span>Visitors</span><strong id="visitors">42.8k</strong><div class="delta">+12.4%</div></article>
-        <article class="card"><span>Signups</span><strong id="signups">3,842</strong><div class="delta">+8.1%</div></article>
-        <article class="card"><span>Activation</span><strong id="activation">48%</strong><div class="delta">+5.6%</div></article>
-        <article class="card"><span>Paid Conversion</span><strong id="conversion">7.2%</strong><div class="delta">+1.3%</div></article>
+      <section class="metrics" aria-label="核心指标">
+        <article class="card"><span>访问人数</span><strong id="visitors">42.8k</strong></article>
+        <article class="card"><span>注册人数</span><strong id="signups">3,842</strong></article>
+        <article class="card"><span>激活率</span><strong id="activation">48%</strong></article>
+        <article class="card"><span>付费转化率</span><strong id="conversion">7.2%</strong></article>
       </section>
 
       <section class="grid">
         <article class="panel">
-          <h2>Activation Trend</h2>
-          <svg class="chart" viewBox="0 0 680 260" role="img" aria-label="Activation trend chart">
+          <h2>激活人数趋势</h2>
+          <svg class="chart" viewBox="0 0 680 260" role="img" aria-label="激活趋势图">
             <path class="axis" d="M40 215H650M40 40V215" />
             <path class="area" d="M40 190L130 172L220 158L310 150L400 122L490 104L580 92L650 76V215H40Z" />
             <path class="line" d="M40 190L130 172L220 158L310 150L400 122L490 104L580 92L650 76" />
@@ -103,17 +139,17 @@
         </article>
 
         <article class="panel">
-          <h2>Conversion Funnel</h2>
+          <h2>转化漏斗</h2>
           <div class="funnel" id="funnel"></div>
         </article>
       </section>
 
       <section class="panel">
-        <h2>Recent Product Events</h2>
+        <h2>产品事件明细</h2>
         <div class="table-wrap">
           <table>
             <thead>
-              <tr><th>Event</th><th>Segment</th><th>Count</th><th>Change</th><th>Status</th></tr>
+              <tr><th>事件</th><th>用户分群</th><th>次数</th><th>统计范围</th><th>状态</th></tr>
             </thead>
             <tbody id="events"></tbody>
           </table>
@@ -122,39 +158,35 @@
     </div>
 
     <script>
-      const funnels = [
-        ["Visited landing", 100],
-        ["Started onboarding", 62],
-        ["Created project", 48],
-        ["Invited teammate", 22],
-        ["Upgraded", 7]
-      ];
-      const events = [
-        ["signup_completed", "New users", "3,842", "+8.1%", "Healthy"],
-        ["project_created", "Activated", "1,846", "+5.6%", "Healthy"],
-        ["invite_sent", "Teams", "812", "-2.4%", "Watch"],
-        ["checkout_started", "Trial users", "420", "+1.9%", "Healthy"],
-        ["export_report", "Power users", "268", "+14.2%", "High intent"]
-      ];
-
+      const records = Array.from({length:90}, (_,day) => ["新用户","回访用户"].map((segment,i) => {
+        const visits = 100 + ((day * 17 + i * 43) % 120);
+        const signups = Math.round(visits * (i ? .08 : .16));
+        const activated = Math.round(signups * (i ? .65 : .48));
+        return {day,segment,visits,signups,activated,invites:Math.round(activated*.4),paid:Math.round(activated*.2)};
+      })).flat();
       function render() {
-        document.querySelector("#funnel").innerHTML = funnels.map(([label, value]) => `
-          <div class="funnel-row">
-            <div class="funnel-label"><span>${label}</span><strong>${value}%</strong></div>
-            <div class="bar"><span style="width:${value}%"></span></div>
-          </div>
-        `).join("");
-
-        document.querySelector("#events").innerHTML = events.map(([event, segment, count, change, status]) => {
-          const cls = status === "Watch" ? "warn" : status === "High intent" ? "good" : "";
-          return `<tr><td>${event}</td><td>${segment}</td><td>${count}</td><td>${change}</td><td><span class="badge ${cls}">${status}</span></td></tr>`;
-        }).join("");
+        const group = document.getElementById("segment").value;
+        const days = [30,7,90][document.getElementById("range").selectedIndex];
+        const rows = records.filter(r => r.day < days && (group === "全部用户" || r.segment === group));
+        const total = key => rows.reduce((n,r) => n + r[key],0);
+        const visits = total("visits"), signups = total("signups"), activated = total("activated"), paid = total("paid");
+        document.getElementById("visitors").textContent = visits.toLocaleString("zh-CN");
+        document.getElementById("signups").textContent = signups.toLocaleString("zh-CN");
+        document.getElementById("activation").textContent = (activated/signups*100).toFixed(1)+"%";
+        document.getElementById("conversion").textContent = (paid/signups*100).toFixed(1)+"%";
+        const steps = [["访问首页",visits],["完成注册",signups],["创建项目",activated],["邀请成员",total("invites")],["完成付费",paid]];
+        document.getElementById("funnel").innerHTML = steps.map(([label,n]) => `<div class="funnel-row"><div class="funnel-label"><span>${label}</span><strong>${n.toLocaleString("zh-CN")} / ${(n/visits*100).toFixed(1)}%</strong></div><div class="bar"><span style="width:${n/visits*100}%"></span></div></div>`).join("");
+        document.getElementById("events").innerHTML = steps.map(([label,n]) => `<tr><td>${label}</td><td>${group}</td><td>${n.toLocaleString("zh-CN")}</td><td>近 ${days} 天</td><td><span class="badge good">已汇总</span></td></tr>`).join("");
+        const values = Array.from({length:7},(_,i) => rows.filter(r => Math.min(6, Math.floor(r.day/days*7)) === i).reduce((n,r)=>n+r.activated,0)).reverse();
+        const max = Math.max(...values,1);
+        const points = values.map((v,i) => [40+i*100,215-v/max*165]);
+        const path = points.map(([x,y],i)=>(i?"L":"M")+x+" "+y).join("");
+        document.querySelector(".line").setAttribute("d",path);
+        document.querySelector(".area").setAttribute("d",path+"L640 215H40Z");
+        document.querySelector(".chart g").innerHTML = points.map(([cx,cy])=>`<circle cx="${cx}" cy="${cy}" r="4" fill="#087f75"><title>激活人数：${values[(cx-40)/100]}</title></circle>`).join("") + `<g fill="#596469" font-size="12"><text x="10" y="219">0</text><text x="4" y="50">${max}</text><text x="40" y="245">${days} 天前</text><text x="610" y="245">今天</text></g>`;
       }
-
-      document.querySelector("#refresh").addEventListener("click", () => {
-        document.querySelector("#conversion").textContent = `${(6.8 + Math.random() * 1.2).toFixed(1)}%`;
-      });
-
+      ["segment","range"].forEach(id => document.getElementById(id).addEventListener("change",render));
+      document.getElementById("refresh").addEventListener("click",render);
       render();
     </script>
   </body>
