@@ -13,6 +13,7 @@ personal-website/
 ├── README.md
 ├── assets/
 │   └── screenshots/              # 各项目预览图
+│       ├── ai-connect4.png
 │       ├── ai-resume-reviewer.jpg
 │       ├── commerce-cms-dashboard.jpg
 │       ├── job-search-dashboard.jpg
@@ -23,10 +24,12 @@ personal-website/
 └── projects/
     ├── ai/                       # AI 应用
     │   └── ai-resume-reviewer/
-    └── data-dashboards/          # 数据看板 / 运营工作台
-        ├── commerce-cms-dashboard/
-        ├── job-search-dashboard/
-        └── product-analytics-dashboard/
+    ├── data-dashboards/          # 数据看板 / 运营工作台
+    │   ├── commerce-cms-dashboard/
+    │   ├── job-search-dashboard/
+    │   └── product-analytics-dashboard/
+    └── games/                    # 小游戏 / 交互 Demo
+        └── ai-connect4/
 ```
 
 ## 项目
@@ -44,6 +47,12 @@ personal-website/
 | **求职管理工作台** | 集中管理投递阶段与跟进备注,支持搜索、筛选、编辑与本地保存 | [打开](projects/data-dashboards/job-search-dashboard/) |
 | **产品数据分析** | 按用户分群与时间范围查看注册、激活、付费漏斗与事件汇总 | [打开](projects/data-dashboards/product-analytics-dashboard/) |
 | **商品运营后台** | 管理商品资料与库存,筛选订单状态,查看客户消费与经营指标 | [打开](projects/data-dashboards/commerce-cms-dashboard/) |
+
+### 小游戏 / 交互 Demo `projects/games/`
+
+| 项目 | 说明 | 预览 |
+|---|---|---|
+| **AI 四子棋** | 单文件、零依赖网页小游戏;Minimax + Alpha-Beta 剪枝 AI,三档难度,含实时局势分析面板 | [打开](projects/games/ai-connect4/) |
 
 ## 本地预览
 

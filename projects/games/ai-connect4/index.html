@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="description" content="AI 四子棋 — 使用 Minimax 与 Alpha-Beta 剪枝的网页小游戏,含实时局势分析面板。" />
+<title>AI 四子棋 · Minimax Connect Four</title>
+<style>
+  :root{
+    --bg:#0b0e14;
+    --panel:#141926;
+    --panel-2:#1b2233;
+    --line:rgba(255,255,255,.08);
+    --text:#e8ecf4;
+    --muted:#8b96ad;
+    --red:#ff4d5e;
+    --red-2:#c81f34;
+    --yellow:#ffc93c;
+    --yellow-2:#e0a100;
+    --accent:#5b8cff;
+    --radius:16px;
+    --font:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+    --mono:"SF Mono",ui-monospace,"Cascadia Code",Consolas,monospace;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:var(--font);
+    color:var(--text);
+    background:
+      radial-gradient(1200px 600px at 20% -10%, #1a2440 0%, transparent 60%),
+      radial-gradient(900px 500px at 110% 110%, #2a1630 0%, transparent 55%),
+      var(--bg);
+    min-height:100%;
+    display:flex;
+    justify-content:center;
+    padding:28px 16px 40px;
+  }
+  .app{width:100%;max-width:960px}
+
+  header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+  .brand h1{margin:0;font-size:clamp(20px,3.4vw,28px);letter-spacing:-.02em;font-weight:700}
+  .brand p{margin:6px 0 0;color:var(--muted);font-size:13px}
+  .brand .tag{color:var(--accent);font-family:var(--mono);font-size:12px}
+
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .seg{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
+  .seg button{background:transparent;border:0;color:var(--muted);font:inherit;font-size:13px;padding:7px 13px;border-radius:999px;cursor:pointer;transition:.18s}
+  .seg button:hover{color:var(--text)}
+  .seg button.on{background:var(--panel-2);color:var(--text);box-shadow:0 1px 0 rgba(255,255,255,.05) inset}
+  .btn{background:var(--panel);border:1px solid var(--line);color:var(--text);font:inherit;font-size:13px;padding:9px 16px;border-radius:999px;cursor:pointer;transition:.18s}
+  .btn:hover{border-color:rgba(255,255,255,.22);transform:translateY(-1px)}
+  .btn.primary{background:linear-gradient(180deg,#5b8cff,#3f6fe0);border-color:transparent;font-weight:600}
+
+  .stage{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:18px;align-items:start}
+  @media (max-width:760px){.stage{grid-template-columns:1fr}}
+
+  .board-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:0 20px 50px -25px rgba(0,0,0,.9)}
+  .turnbar{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:13px;color:var(--muted);min-height:22px}
+  .dot{width:11px;height:11px;border-radius:50%;box-shadow:0 0 0 3px rgba(255,255,255,.06)}
+  .dot.red{background:radial-gradient(circle at 35% 30%,#ff8a95,var(--red-2))}
+  .dot.yellow{background:radial-gradient(circle at 35% 30%,#ffe07a,var(--yellow-2))}
+  .status{font-weight:600;color:var(--text)}
+  .status.win{color:var(--accent)}
+
+  .board{
+    position:relative;
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:8px;
+    padding:10px;
+    border-radius:14px;
+    background:linear-gradient(180deg,#1d2740,#161d2e);
+    border:1px solid var(--line);
+    user-select:none;
+  }
+  .col{display:grid;grid-template-rows:repeat(6,1fr);gap:8px;border-radius:10px;padding:4px;cursor:pointer;transition:background .15s}
+  .col:hover{background:rgba(91,140,255,.10)}
+  .col.locked{cursor:default}
+  .cell{
+    aspect-ratio:1/1;width:100%;border-radius:50%;
+    background:#0e1320;
+    box-shadow:inset 0 2px 6px rgba(0,0,0,.85), 0 1px 0 rgba(255,255,255,.04);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .cell .disc{width:86%;height:86%;border-radius:50%;opacity:0;transform:scale(.4)}
+  .cell.red .disc{background:radial-gradient(circle at 34% 28%,#ff9aa4,var(--red) 45%,var(--red-2));box-shadow:0 2px 6px rgba(0,0,0,.5), inset 0 -3px 6px rgba(0,0,0,.25)}
+  .cell.yellow .disc{background:radial-gradient(circle at 34% 28%,#ffe893,var(--yellow) 45%,var(--yellow-2));box-shadow:0 2px 6px rgba(0,0,0,.5), inset 0 -3px 6px rgba(0,0,0,.25)}
+  .cell.red .disc,.cell.yellow .disc{opacity:1;transform:none}
+  .cell.dropped .disc{animation:drop .28s cubic-bezier(.3,1.4,.5,1)}
+  @keyframes drop{from{transform:translateY(-320%) scale(.9);opacity:.4}to{transform:none;opacity:1}}
+  .cell.win .disc{animation:winpulse 1s ease-in-out infinite}
+  @keyframes winpulse{0%,100%{box-shadow:0 0 0 0 rgba(91,140,255,.0)}50%{box-shadow:0 0 0 5px rgba(91,140,255,.55)}}
+
+  .analysis{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 15px}
+  .analysis h2{margin:0 0 12px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .evbar{height:12px;border-radius:999px;background:var(--red-2);overflow:hidden;position:relative;margin-bottom:6px}
+  .evbar i{position:absolute;left:0;top:0;bottom:0;width:50%;background:linear-gradient(90deg,var(--yellow-2),var(--yellow));transition:width .45s cubic-bezier(.4,0,.2,1)}
+  .evlegend{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:16px}
+  .stat{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13px}
+  .stat:last-of-type{border-bottom:0}
+  .stat b{font-family:var(--mono);font-weight:600;color:var(--text)}
+  .stat span{color:var(--muted)}
+  .hint{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.6}
+  .kbd{font-family:var(--mono);background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:11px}
+  footer{margin-top:22px;color:var(--muted);font-size:12px;text-align:center;line-height:1.7}
+  footer a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <h1>AI 四子棋 <span class="tag">Minimax + α-β</span></h1>
+      <p>你执 <b style="color:var(--red)">红</b>,AI 执 <b style="color:var(--yellow)">黄</b>。点击任意列落子,先连成四子者胜。</p>
+    </div>
+    <div class="controls">
+      <div class="seg" id="diff">
+        <button data-d="2">简单</button>
+        <button data-d="4" class="on">普通</button>
+        <button data-d="6">困难</button>
+      </div>
+      <button class="btn" id="first">AI 先手</button>
+      <button class="btn primary" id="restart">重开</button>
+    </div>
+  </header>
+
+  <div class="stage">
+    <section class="board-card">
+      <div class="turnbar">
+        <span class="dot red" id="turnDot"></span>
+        <span id="status" class="status">轮到你落子</span>
+      </div>
+      <div class="board" id="board" role="grid" aria-label="四子棋棋盘"></div>
+    </section>
+
+    <aside class="analysis">
+      <h2>局势分析 · AI 视角</h2>
+      <div class="evbar"><i id="evfill"></i></div>
+      <div class="evlegend"><span>红方优势</span><span>均势</span><span>黄方优势</span></div>
+
+      <div class="stat"><span>评估分</span><b id="sScore">0</b></div>
+      <div class="stat"><span>搜索深度</span><b id="sDepth">—</b></div>
+      <div class="stat"><span>搜索节点</span><b id="sNodes">—</b></div>
+      <div class="stat"><span>AI 建议落子</span><b id="sBest">—</b></div>
+      <div class="stat"><span>用时</span><b id="sTime">—</b></div>
+
+      <p class="hint">
+        键盘 <span class="kbd">1</span>–<span class="kbd">7</span> 也可落子。<br />
+        AI 用 Minimax 搜索 + Alpha-Beta 剪枝 + 启发式评估;<br />
+        难度越高搜索越深,「搜索节点」会随之增长。
+      </p>
+    </aside>
+  </div>
+
+  <footer>
+    <div>单文件 · 零依赖 · 打开即玩 &nbsp;|&nbsp; AI 辅助开发的从 0 到 1 小游戏</div>
+    <div>算法:Minimax · Alpha-Beta Pruning · Heuristic Evaluation</div>
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ---------- 常量 ---------- */
+  const COLS = 7, ROWS = 6;
+  const EMPTY = 0, HUMAN = 1, AI = 2;
+  const ORDER = [3, 2, 4, 1, 5, 0, 6];        // 中间优先,配合 α-β 剪枝
+  const WIN = 1e6;                              // 胜负分阈值
+
+  /* ---------- 状态 ---------- */
+  let board;            // board[r][c],r=0 为最顶行
+  let turn;
+  let over;
+  let locked;
+  let depth = 4;
+  let aiFirst = false;
+  let lastMove = null;  // {r,c}
+  let winCells = [];
+
+  /* ---------- DOM ---------- */
+  const boardEl  = document.getElementById("board");
+  const statusEl = document.getElementById("status");
+  const turnDot  = document.getElementById("turnDot");
+  const evfill   = document.getElementById("evfill");
+  const sScore   = document.getElementById("sScore");
+  const sDepth   = document.getElementById("sDepth");
+  const sNodes   = document.getElementById("sNodes");
+  const sBest    = document.getElementById("sBest");
+  const sTime    = document.getElementById("sTime");
+
+  /* ---------- 棋盘基础操作 ---------- */
+  const cloneBoard = b => b.map(row => row.slice());
+
+  function newBoard() {
+    return Array.from({ length: ROWS }, () => new Array(COLS).fill(EMPTY));
+  }
+
+  /** 该列最下方可落子的行号;列满返回 -1 */
+  function dropRow(b, c) {
+    for (let r = ROWS - 1; r >= 0; r--) if (b[r][c] === EMPTY) return r;
+    return -1;
+  }
+
+  const validMoves = b => ORDER.filter(c => b[0][c] === EMPTY);
+
+  /** 落子后是否获胜;返回获胜的 4 个坐标数组,否则 null */
+  function findWin(b, r, c, p) {
+    const dirs = [[0, 1], [1, 0], [1, 1], [1, -1]];
+    for (const [dr, dc] of dirs) {
+      const cells = [[r, c]];
+      for (const sign of [1, -1]) {
+        for (let k = 1; k < 4; k++) {
+          const rr = r + dr * k * sign, cc = c + dc * k * sign;
+          if (rr < 0 || rr >= ROWS || cc < 0 || cc >= COLS) break;
+          if (b[rr][cc] !== p) break;
+          cells.push([rr, cc]);
+        }
+      }
+      if (cells.length >= 4) return cells.slice(0, 4);
+    }
+    return null;
+  }
+
+  const isFull = b => b[0].every(v => v !== EMPTY);
+
+  /* ---------- 评估函数(启发式) ---------- */
+  /** 统计长度为 4 的窗口,给双方打分 */
+  function evalBoard(b, me) {
+    const opp = me === AI ? HUMAN : AI;
+    let score = 0;
+
+    // 中心列偏好:中间列更容易形成多方向连线
+    for (let r = 0; r < ROWS; r++) {
+      if (b[r][3] === me) score += 6;
+      else if (b[r][3] === opp) score -= 6;
+    }
+
+    const windows = [];
+    // 水平
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c + 3 < COLS; c++)
+        windows.push([[r, c], [r, c + 1], [r, c + 2], [r, c + 3]]);
+    // 垂直
+    for (let c = 0; c < COLS; c++)
+      for (let r = 0; r + 3 < ROWS; r++)
+        windows.push([[r, c], [r + 1, c], [r + 2, c], [r + 3, c]]);
+    // 两条对角线
+    for (let r = 0; r + 3 < ROWS; r++)
+      for (let c = 0; c + 3 < COLS; c++) {
+        windows.push([[r, c], [r + 1, c + 1], [r + 2, c + 2], [r + 3, c + 3]]);
+        windows.push([[r + 3, c], [r + 2, c + 1], [r + 1, c + 2], [r, c + 3]]);
+      }
+
+    for (const w of windows) {
+      let mine = 0, theirs = 0;
+      for (const [r, c] of w) {
+        if (b[r][c] === me) mine++;
+        else if (b[r][c] === opp) theirs++;
+      }
+      if (mine && theirs) continue;                 // 混合窗口无价值
+      if (mine === 3) score += 120;                 // 三连(还差一子)
+      else if (mine === 2) score += 12;
+      if (theirs === 3) score -= 150;               // 对手三连更该防
+      else if (theirs === 2) score -= 10;
+    }
+    return score;
+  }
+
+  /* ---------- Minimax + Alpha-Beta ---------- */
+  let nodes = 0;
+
+  function minimax(b, d, alpha, beta, maximizing) {
+    nodes++;
+
+    // 终局检测:上一步落子是否已分出胜负(用整盘扫描,保证正确)
+    const term = terminalScore(b);
+    if (term !== null) return term;
+    if (d === 0) return evalBoard(b, AI);
+
+    const moves = validMoves(b);
+    if (!moves.length) return 0;                    // 平局
+
+    if (maximizing) {
+      let best = -Infinity;
+      for (const c of moves) {
+        const r = dropRow(b, c);
+        b[r][c] = AI;
+        const v = minimax(b, d - 1, alpha, beta, false);
+        b[r][c] = EMPTY;
+        if (v > best) best = v;
+        if (best > alpha) alpha = best;
+        if (alpha >= beta) break;                   // α-β 剪枝
+      }
+      return best;
+    } else {
+      let best = Infinity;
+      for (const c of moves) {
+        const r = dropRow(b, c);
+        b[r][c] = HUMAN;
+        const v = minimax(b, d - 1, alpha, beta, true);
+        b[r][c] = EMPTY;
+        if (v < best) best = v;
+        if (best < beta) beta = best;
+        if (alpha >= beta) break;
+      }
+      return best;
+    }
+  }
+
+  /** 若已终局返回 ±WIN / 0,否则 null(检查最近落子所在列) */
+  function terminalScore(b) {
+    // 扫描全盘:只要有任一四连即终局(对局中最多一方达成)
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c < COLS; c++) {
+        const p = b[r][c];
+        if (p === EMPTY) continue;
+        // 只检查向右/向下/两个斜向,避免重复
+        if (c + 3 < COLS && p === b[r][c+1] && p === b[r][c+2] && p === b[r][c+3])
+          return p === AI ? WIN - (ROWS - r) : -WIN + (ROWS - r);
+        if (r + 3 < ROWS && p === b[r+1][c] && p === b[r+2][c] && p === b[r+3][c])
+          return p === AI ? WIN - (ROWS - r) : -WIN + (ROWS - r);
+        if (r + 3 < ROWS && c + 3 < COLS && p === b[r+1][c+1] && p === b[r+2][c+2] && p === b[r+3][c+3])
+          return p === AI ? WIN - (ROWS - r) : -WIN + (ROWS - r);
+        if (r + 3 < ROWS && c - 3 >= 0 && p === b[r+1][c-1] && p === b[r+2][c-2] && p === b[r+3][c-3])
+          return p === AI ? WIN - (ROWS - r) : -WIN + (ROWS - r);
+      }
+    return null;
+  }
+
+  /** 计算 AI 的最佳落子,并回填分析数据 */
+  function bestMove(b, d) {
+    nodes = 0;
+    const t0 = performance.now();
+    let bestScore = -Infinity, bestCol = -1;
+    let alpha = -Infinity, beta = Infinity;
+
+    for (const c of validMoves(b)) {
+      const r = dropRow(b, c);
+      b[r][c] = AI;
+      const v = minimax(b, d - 1, alpha, beta, false);
+      b[r][c] = EMPTY;
+      if (v > bestScore) { bestScore = v; bestCol = c; }
+      if (v > alpha) alpha = v;
+    }
+    const ms = performance.now() - t0;
+    return { col: bestCol, score: bestScore, nodes, ms, depth: d };
+  }
+
+  /* ---------- 渲染 ---------- */
+  function buildBoard() {
+    boardEl.innerHTML = "";
+    for (let c = 0; c < COLS; c++) {
+      const col = document.createElement("div");
+      col.className = "col";
+      col.dataset.col = c;
+      for (let r = 0; r < ROWS; r++) {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.dataset.r = r; cell.dataset.c = c;
+        cell.appendChild(document.createElement("div")).className = "disc";
+        col.appendChild(cell);
+      }
+      col.addEventListener("click", () => playerMove(c));
+      boardEl.appendChild(col);
+    }
+  }
+
+  function cellEl(r, c) { return boardEl.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`); }
+
+  function paint() {
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c < COLS; c++) {
+        const el = cellEl(r, c);
+        el.classList.remove("red", "yellow", "dropped", "win");
+        if (board[r][c] === HUMAN) el.classList.add("red");
+        if (board[r][c] === AI) el.classList.add("yellow");
+      }
+    if (lastMove) {
+      const el = cellEl(lastMove.r, lastMove.c);
+      el.classList.add("dropped");
+      setTimeout(() => el.classList.remove("dropped"), 320);
+    }
+    winCells.forEach(([r, c]) => cellEl(r, c).classList.add("win"));
+
+    const myTurn = !over && turn === HUMAN;
+    boardEl.querySelectorAll(".col").forEach(col => {
+      col.classList.toggle("locked", !myTurn || dropRow(board, +col.dataset.col) < 0);
+    });
+  }
+
+  function setTurnUI() {
+    if (over) return;
+    const human = turn === HUMAN;
+    turnDot.className = "dot " + (human ? "red" : "yellow");
+    statusEl.textContent = human ? "轮到你落子" : "AI 思考中…";
+    statusEl.classList.remove("win");
+  }
+
+  function showAnalysis(res) {
+    // 把评估分映射到 0–100% 的优势条(AI 视角:越高越偏黄)
+    const pct = 100 / (1 + Math.exp(-res.score / 300));   // logistic 映射
+    evfill.style.width = pct.toFixed(1) + "%";
+    sScore.textContent = res.score > 0 ? "+" + res.score : String(res.score);
+    sDepth.textContent = res.depth;
+    sNodes.textContent = res.nodes.toLocaleString();
+    sBest.textContent = "第 " + (res.col + 1) + " 列";
+    sTime.textContent = res.ms.toFixed(1) + " ms";
+  }
+
+  /* ---------- 对局流程 ---------- */
+  function place(c, p) {
+    const r = dropRow(board, c);
+    if (r < 0) return null;
+    board[r][c] = p;
+    lastMove = { r, c };
+    const win = findWin(board, r, c, p);
+    paint();
+    if (win) {
+      winCells = win;
+      over = true;
+      statusEl.textContent = p === HUMAN ? "🎉 你赢了!" : "AI 获胜";
+      statusEl.classList.add("win");
+      paint();
+      return { r, c };
+    }
+    if (isFull(board)) {
+      over = true;
+      statusEl.textContent = "平局";
+      return { r, c };
+    }
+    turn = p === HUMAN ? AI : HUMAN;
+    setTurnUI();
+    return { r, c };
+  }
+
+  function playerMove(c) {
+    if (over || locked || turn !== HUMAN) return;
+    if (dropRow(board, c) < 0) return;
+    locked = true;
+    place(c, HUMAN);
+    locked = false;
+    if (!over) setTimeout(aiMove, 180);
+  }
+
+  function aiMove() {
+    if (over) return;
+    const work = cloneBoard(board);
+    const res = bestMove(work, depth);
+    showAnalysis(res);
+    if (res.col >= 0) place(res.col, AI);
+    if (!over && aiFirst) locked = false;
+  }
+
+  /* ---------- 初始化 / 控制 ---------- */
+  function reset(aiStarts) {
+    board = newBoard();
+    turn = HUMAN;
+    over = false;
+    locked = false;
+    lastMove = null;
+    winCells = [];
+    evfill.style.width = "50%";
+    sScore.textContent = "0"; sDepth.textContent = "—";
+    sNodes.textContent = "—"; sBest.textContent = "—"; sTime.textContent = "—";
+    buildBoard();
+    paint();
+    setTurnUI();
+    if (aiStarts) { turn = AI; setTurnUI(); locked = true; setTimeout(aiMove, 260); }
+  }
+
+  document.getElementById("diff").addEventListener("click", e => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    depth = +b.dataset.d;
+    document.querySelectorAll("#diff button").forEach(x => x.classList.toggle("on", x === b));
+  });
+
+  document.getElementById("restart").addEventListener("click", () => reset(aiFirst));
+
+  document.getElementById("first").addEventListener("click", e => {
+    aiFirst = !aiFirst;
+    e.target.textContent = aiFirst ? "我先手" : "AI 先手";
+    reset(aiFirst);
+  });
+
+  window.addEventListener("keydown", e => {
+    const n = +e.key;
+    if (n >= 1 && n <= 7) playerMove(n - 1);
+  });
+
+  reset(false);
+
+  /* 演示模式:URL 带 #demo 时自动走几步,便于截图/演示 */
+  if (location.hash.includes("demo")) {
+    (async () => {
+      for (const c of [3, 3, 4, 2, 5]) {
+        if (over) break;
+        playerMove(c);
+        await new Promise(r => setTimeout(r, 750));
+      }
+    })();
+  }
+})();
+</script>
+</body>
+</html>
