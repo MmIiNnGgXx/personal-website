@@ -6,7 +6,7 @@
 
 ## 已实现
 
-时间范围和用户分群筛选，同步更新核心指标、激活趋势、转化漏斗和事件汇总。
+通过 Supabase Edge Function 调用 GA4 Data API，读取真实活跃用户、会话、事件、关键事件与每日趋势。
 
 ## 技术与运行
 
@@ -14,7 +14,7 @@ HTML、CSS、原生 JavaScript。直接打开 index.html，或通过 GitHub Page
 
 ## 当前边界
 
-采用固定生成的示例记录，没有真实埋点接入。刷新不随机改数；激活率和付费转化率以注册人数为分母，漏斗以访问人数为分母。
+没有 GA4 凭据或未登录时显示空状态，不生成模拟指标。Google 服务账号与 Property ID 仅保存在 Supabase Secrets。
 
 ## 验证
 

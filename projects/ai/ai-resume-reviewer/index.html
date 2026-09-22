@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>简历与岗位诊断</title>
+    <link rel="stylesheet" href="../../shared/cloud.css" />
+    <script src="config.js" defer></script><script src="../../shared/cloud.js" defer></script>
     <style>
       :root {
         --bg: #f5f6f8;
@@ -101,18 +103,18 @@
       @media(max-width:560px) { h1 { font-size:23px; } header { padding:18px 0; } .panel { padding:16px; } .workspace-nav { gap:12px; } .metrics>.card,.metric,.stat { padding:14px 10px; } .metric strong,.stat strong,.card strong { font-size:25px; } }
       @media(prefers-reduced-motion:reduce) { * { transition:none!important; } }
 header { display:block; } main { grid-template-columns:380px minmax(0,1fr); } @media(max-width:980px){ main{grid-template-columns:1fr;} }
+      .page-head{display:flex;align-items:center;justify-content:space-between;gap:18px}.upload{border:1px dashed #aab8c5;padding:14px;border-radius:8px;background:#f8fafc}.upload input{padding:0;border:0}.upload small,.analysis-note{color:var(--muted);font-weight:400}.analysis-state{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;background:#eef4ff;color:#2452a4;border-radius:6px;font-size:12px}.analysis-state[data-mode="rules"]{background:#fff4e8;color:#8b5615}.spinner{width:13px;height:13px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}@media(max-width:560px){.page-head{align-items:flex-start;flex-direction:column}.actions{grid-template-columns:1fr}.workspace-nav{overflow-x:auto;flex-wrap:nowrap}.workspace-nav a{white-space:nowrap}}
 </style>
   </head>
   <body>
     <div class="shell">
 <nav class="workspace-nav" aria-label="作品导航"><a href="../../../">徐铭杰 / 作品集</a><a href="./" aria-current="page">简历诊断</a><a href="../../data-dashboards/job-search-dashboard/">求职管理</a><a href="../../data-dashboards/product-analytics-dashboard/">数据分析</a><a href="../../data-dashboards/commerce-cms-dashboard/">商品运营</a></nav>
-      <header>
+      <header><div class="page-head">
         <div>
           <h1>简历与岗位诊断<span class="subtitle">Resume Review</span></h1>
-          
         </div>
-        
-      </header>
+        <div class="cloud-status" data-cloud-status></div>
+      </div></header>
 
       <main>
         <aside class="panel form">
@@ -125,15 +127,20 @@ header { display:block; } main { grid-template-columns:380px minmax(0,1fr); } @m
             </select>
           </label>
           <label>你的简历/项目描述
-            <textarea id="resume">熟悉 React、TypeScript、Next.js、Tailwind CSS，做过作品集网站、数据看板、表单、响应式页面和 AI 辅助工作流。了解 GitHub、Vercel、可访问性、产品思维和前端工程化。</textarea>
+            <textarea id="resume" placeholder="可选：粘贴简历文本；上传文件后以文件内容为准"></textarea>
+          </label>
+          <label class="upload">或选择简历文件
+            <input id="resumeFile" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+            <small id="fileState">PDF、DOCX，最大 10 MB；服务端解析后不保存原文件。</small>
           </label>
           <label>岗位要求（JD）
-            <textarea id="jd">负责前端产品开发，要求 React、TypeScript、Next.js、数据看板、表格表单、接口联调、组件化、性能优化、良好的 UI 审美、可访问性意识，能快速完成 AI 产品原型。</textarea>
+            <textarea id="jd" placeholder="粘贴真实岗位职责和任职要求"></textarea>
           </label>
           <div class="actions">
             <button id="analyze">重新分析</button>
             <button class="ghost" id="export">导出报告</button>
           </div>
+          <div class="analysis-state" id="analysisState" data-mode="rules"><span>等待真实数据</span><small>登录后上传简历并粘贴 JD</small></div>
         </aside>
 
         <section class="stack">
@@ -192,16 +199,29 @@ header { display:block; } main { grid-template-columns:380px minmax(0,1fr); } @m
         return text.toLowerCase().includes(word.toLowerCase());
       }
 
-      function analyze(recordHistory = true) {
+      let lastResult = null;
+      function fileData(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(",")[1]);reader.onerror=()=>reject(Error("无法读取文件"));reader.readAsDataURL(file)})}
+      async function analyze(recordHistory = true) {
         const role = document.querySelector("#role").value;
         const resume = document.querySelector("#resume").value;
         const jd = document.querySelector("#jd").value;
-        if (!resume.trim() || !jd.trim()) { alert("请填写简历内容和岗位要求。"); return; }
+        const file=document.querySelector("#resumeFile").files[0];
+        if ((!resume.trim()&&!file) || !jd.trim()) { alert("请填写简历内容或选择文件，并填写岗位要求。"); return; }
+        const state=document.querySelector("#analysisState"),button=document.querySelector("#analyze");button.disabled=true;state.innerHTML='<span class="spinner"></span><span>正在生成诊断…</span>';state.dataset.mode="loading";
+        if(recordHistory&&window.SUPABASE_CONFIG?.url&&file&&window.PortfolioCloud?.session()){
+          try{
+            const response=await fetch(window.SUPABASE_CONFIG.url+"/functions/v1/analyze-resume",{method:"POST",headers:{apikey:window.SUPABASE_CONFIG.anonKey,Authorization:`Bearer ${window.PortfolioCloud?.session()?.access_token||window.SUPABASE_CONFIG.anonKey}`,"Content-Type":"application/json"},body:JSON.stringify({role,resume,jobDescription:jd,file:{name:file.name,type:file.type,data:await fileData(file)}})});
+            const data=await response.json();if(!response.ok)throw Error(data.error||"AI 分析失败");renderAIResult(data.result);lastResult={...data.result,id:crypto.randomUUID(),role,at:new Date().toLocaleString("zh-CN"),mode:"ai"};saveHistory(lastResult);renderHistory();state.innerHTML=`<span>DeepSeek 真实诊断</span><small>${escapeHtml(data.model||"")} · 原文件未保存</small>`;state.dataset.mode="ai";button.disabled=false;return;
+          }catch(error){state.innerHTML=`<span>诊断失败</span><small>${escapeHtml(error.message)}</small>`;state.dataset.mode="rules";button.disabled=false;return}
+        }
+        state.innerHTML=`<span>无法开始诊断</span><small>${!window.PortfolioCloud?.session()?"请先登录":"请选择 PDF 或 DOCX 简历"}</small>`;state.dataset.mode="rules";button.disabled=false;return;
+        /* Legacy local scorer retained below only for historical report rendering. */
         const required = allKeywords.filter((word) => has(jd, word));
         const matched = required.filter((word) => has(resume, word));
         const missing = required.filter((word) => !has(resume, word));
         const score = required.length ? Math.round((matched.length / required.length) * 100) : 0;
-        const result = { role, score, matched, missing, at: new Date().toLocaleString("zh-CN") };
+        const result = { id:crypto.randomUUID(), role, score, matched, missing, at: new Date().toLocaleString("zh-CN"), mode:"rules" };
+        lastResult=result;
 
         document.querySelector("#score").textContent = score;
         document.querySelector("#score").className = score >= 75 ? "status-good" : score >= 50 ? "status-mid" : "status-low";
@@ -214,7 +234,11 @@ header { display:block; } main { grid-template-columns:380px minmax(0,1fr); } @m
         renderRewriteAdvice(role, missing);
         if (recordHistory) saveHistory(result);
         renderHistory();
+        state.innerHTML="<span>本地规则诊断</span><small>AI 未配置或未选择文件</small>";state.dataset.mode="rules";button.disabled=false;
       }
+
+      const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+      function renderAIResult(result){const score=Math.max(0,Math.min(100,Number(result.score)||0));document.querySelector("#score").textContent=score;document.querySelector("#score").className=score>=75?"status-good":score>=50?"status-mid":"status-low";const matched=Array.isArray(result.matched)?result.matched:[],missing=Array.isArray(result.missing)?result.missing:[];document.querySelector("#coverage").textContent=`${matched.length}/${matched.length+missing.length}`;document.querySelector("#todoCount").textContent=missing.length;renderChips("#matched",matched,"good");renderChips("#missing",missing,"warn");document.querySelector("#dimensions").innerHTML=`<div class="analysis-note">${escapeHtml(result.summary||"已完成综合诊断")}</div>`;document.querySelector("#portfolioAdvice").innerHTML=(result.actions||[]).map(item=>`<li>${escapeHtml(item)}</li>`).join("")||"<li>暂无优先修改项</li>";document.querySelector("#rewriteAdvice").innerHTML=(result.strengths||[]).map(item=>`<li>${escapeHtml(item)}</li>`).join("")||"<li>请补充更具体的项目成果。</li>"}
 
       function renderDimensions(resume, jd) {
         document.querySelector("#dimensions").innerHTML = Object.entries(dimensions).map(([name, words]) => {
@@ -282,7 +306,8 @@ header { display:block; } main { grid-template-columns:380px minmax(0,1fr); } @m
 
       document.querySelector("#analyze").addEventListener("click", analyze);
       document.querySelector("#export").addEventListener("click", exportReport);
-      analyze(false);
+      document.querySelector("#resumeFile").addEventListener("change",event=>{const file=event.target.files[0],state=document.querySelector("#fileState");if(!file){state.textContent="PDF、DOCX，最大 10 MB；服务端解析后不保存原文件。";return}const allowed=/\.(pdf|docx|PDF|DOCX)$/.test(file.name);if(!allowed||file.size>10*1024*1024){state.textContent=!allowed?"不支持该格式，请选择 PDF 或 DOCX。":"文件超过 10 MB，请压缩后重试。";event.target.value="";return}state.textContent=`已选择：${file.name} · ${(file.size/1024/1024).toFixed(1)} MB`});
+      renderHistory();
     </script>
   </body>
 </html>

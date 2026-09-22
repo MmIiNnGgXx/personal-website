@@ -2,7 +2,7 @@
 const $ = id => document.getElementById(id);
 const stages = {Saved:"待投递",Applied:"已投递",Interview:"面试中",Offer:"已录用",Rejected:"已结束"};
 const priorities = {high:"高优先级",normal:"中优先级",low:"低优先级"};
-const fields = ["company","role","city","salary","status","priority","next","deadline","source","notes"];
+const fields = ["company","role","city","salary","status","priority","next","deadline","source","sourceUrl","description","notes"];
 const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const icon = name => `<img src="icons/${name}.svg" alt="">`;
 const uid = () => crypto.randomUUID();
@@ -13,7 +13,7 @@ const active = job => !["Offer","Rejected"].includes(job.status);
 const validDay = value => /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(new Date(value+"T12:00:00").getTime()) && dayString(new Date(value+"T12:00:00")) === value;
 const validId = value => typeof value === "string" && /^[a-zA-Z0-9-]{1,80}$/.test(value);
 const formatDate = value => value ? value.replace("T"," ").slice(0,16) : "未安排日期";
-let jobs = [], editing = null, selected = null, editingInterview = null, mode = "board", toastTimer;
+let jobs = [], editing = null, selected = null, editingInterview = null, mode = "board", toastTimer, cloudBusy=false;
 
 function notify(message) {
   $("toast").textContent = message;
@@ -40,16 +40,7 @@ function normalizeJob(raw) {
 }
 
 function sampleJobs() {
-  return [
-    ["星辰科技（示例）","前端开发工程师","厦门","12–18K · 13薪","Interview","high","准备组件设计案例",0],
-    ["知序数据（示例）","数据可视化工程师","杭州","15–22K","Applied","high","发送数据看板作品",1],
-    ["青禾设计（示例）","产品型前端工程师","厦门","10–16K","Saved","normal","整理岗位要求",2],
-    ["云际实验室（示例）","AI 应用开发工程师","远程","12–20K","Interview","high","补充接口联调说明",-1],
-    ["轻舟软件（示例）","Web 前端工程师","福州","10–15K","Applied","normal","确认简历接收状态",3],
-    ["拾光产品（示例）","交互开发工程师","深圳","14–20K","Saved","low","调整项目展示顺序",5],
-    ["映山科技（示例）","前端开发工程师","厦门","11–16K","Offer","high","",0],
-    ["木川工作室（示例）","前端实习生","厦门","面议","Rejected","low","",0]
-  ].map(([company,role,city,salary,status,priority,next,days],i) => normalizeJob({company,role,city,salary,status,priority,next,deadline:next?offsetDay(days):"",source:i%2?"官网":"内推",notes:"示例职位，可编辑或删除。",created:Date.now()-i*86400000,history:[{at:Date.now()-i*86400000,text:"添加职位"}]}));
+  return [];
 }
 
 try {
@@ -70,7 +61,19 @@ function commit(nextJobs, message) {
   jobs = nextJobs;
   render();
   if(message) notify(message);
+  syncCloud().catch(()=>{});
   return true;
+}
+async function syncCloud(){
+  const cloud=window.PortfolioCloud,userId=cloud?.userId();if(!userId||cloudBusy)return;cloudBusy=true;
+  try{
+    const remote=await cloud.rows("jobs","select=*");
+    const byId=new Map(jobs.map(job=>[job.id,job]));remote.forEach(row=>{try{if(!byId.has(row.id))byId.set(row.id,normalizeJob({id:row.id,company:row.company,role:row.role,city:row.location,salary:row.salary,status:row.status,priority:row.priority,next:row.next_action,deadline:row.deadline||"",sourceUrl:row.source_url,description:row.description,notes:row.notes,created:new Date(row.created_at).getTime()}))}catch{}});jobs=[...byId.values()];localStorage.setItem("jobs",JSON.stringify(jobs));
+    await cloud.upsert("jobs",jobs.map(job=>({id:job.id,user_id:userId,company:job.company,role:job.role,location:job.city,salary:job.salary,source_url:job.sourceUrl,description:job.description,status:job.status,priority:job.priority,next_action:job.next,deadline:job.deadline||null,notes:job.notes,updated_at:new Date().toISOString()})));
+    const interviews=jobs.flatMap(job=>job.interviews.map(item=>({id:item.id,user_id:userId,job_id:job.id,title:item.title,scheduled_at:item.at?new Date(item.at).toISOString():null,notes:item.notes,completed:item.done,updated_at:new Date().toISOString()})));if(interviews.length)await cloud.upsert("interviews",interviews);
+    const followups=jobs.filter(job=>job.next).map(job=>({id:job.id,user_id:userId,job_id:job.id,title:job.next,due_at:job.deadline?job.deadline+"T12:00:00Z":null,completed:false,updated_at:new Date().toISOString()}));if(followups.length)await cloud.upsert("followups",followups);
+    render();notify("云端数据已同步");
+  }catch(error){notify("云同步失败："+error.message)}finally{cloudBusy=false}
 }
 function update(id, patch, message) {
   const job = jobs.find(j => j.id === id);
@@ -216,13 +219,14 @@ function exportData() {
   const url=URL.createObjectURL(new Blob([content],{type:"application/json;charset=utf-8"}));
   const a=document.createElement("a");a.href=url;a.download="求职工作台备份-"+today+".json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
+function parseCsv(text){const rows=[];let row=[],cell="",quoted=false;for(let i=0;i<text.length;i++){const c=text[i],next=text[i+1];if(c==='"'&&quoted&&next==='"'){cell+='"';i++}else if(c==='"')quoted=!quoted;else if(c===','&&!quoted){row.push(cell);cell=""}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&next==='\n')i++;row.push(cell);if(row.some(value=>value.trim()))rows.push(row);row=[];cell=""}else cell+=c}row.push(cell);if(row.some(value=>value.trim()))rows.push(row);if(rows.length<2)return[];const headers=rows.shift().map(value=>value.trim().toLowerCase()),aliases={company:["company","公司"],role:["role","岗位","职位"],city:["city","城市","地点"],salary:["salary","薪资"],sourceUrl:["url","link","职位链接"],description:["jd","description","岗位描述"]};return rows.map(values=>Object.fromEntries(Object.entries(aliases).map(([key,names])=>{const index=headers.findIndex(header=>names.includes(header));return[key,index>=0?(values[index]||"").trim():""]}))).filter(item=>item.company&&item.role)}
 
 $("importFile").addEventListener("change",async event=>{
   const file=event.target.files[0];
   if(!file) return;
   try {
     if(file.size>5*1024*1024) throw Error("备份文件不能超过 5 MB");
-    const data=JSON.parse(await file.text());
+    const text=await file.text(),data=file.name.toLowerCase().endsWith(".csv")?parseCsv(text):JSON.parse(text);
     const raw=Array.isArray(data)?data:data.version===1?data.jobs:null;
     if(!Array.isArray(raw)||raw.length>2000) throw Error("备份格式无效");
     const incoming=raw.map(normalizeJob), ids=new Set(jobs.map(j=>j.id));
@@ -230,7 +234,7 @@ $("importFile").addEventListener("change",async event=>{
     incoming.forEach(j=>{if(!ids.has(j.id)){additions.push(j);ids.add(j.id);}});
     if(jobs.length+additions.length>2000) throw Error("合并后超过 2000 个职位");
     if(!additions.length) {notify("没有新记录，相同编号的职位已保留");return;}
-    if(confirm("导入 "+additions.length+" 个新职位？现有同编号记录不会覆盖。")) commit([...additions,...jobs],"导入完成");
+    if(confirm("导入 "+additions.length+" 个真实职位？现有同编号记录不会覆盖。")) commit([...additions,...jobs],"导入完成");
   } catch(e) {notify("导入失败："+e.message);}
   finally {event.target.value="";}
 });
@@ -261,7 +265,7 @@ document.addEventListener("click",event=>{
     return;
   }
   if(action==="delete") {
-    if(confirm("删除「"+job.company+"」及其面试记录？") && commit(jobs.filter(j=>j.id!==id),"职位已删除")) $("detail").close();
+    if(confirm("删除「"+job.company+"」及其面试记录？") && commit(jobs.filter(j=>j.id!==id),"职位已删除")){window.PortfolioCloud?.remove("jobs",id).catch(()=>{});$("detail").close()}
   } else if(action==="next"||action==="prev") {
     const keys=Object.keys(stages), index=keys.indexOf(job.status), next=keys[Math.max(0,Math.min(keys.length-1,index+(action==="next"?1:-1)))];
     update(id,{status:next},"阶段更新为"+stages[next]);
@@ -279,4 +283,6 @@ $("status").innerHTML=options;
 $("stageFilter").insertAdjacentHTML("beforeend",options);
 ["search","stageFilter","priorityFilter","sort","scheduleFilter"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",render));
 window.addEventListener("hashchange",render);
+window.addEventListener("cloud-auth",event=>{if(event.detail)syncCloud()});
+window.addEventListener("load",()=>{if(window.PortfolioCloud?.session())syncCloud()});
 render();

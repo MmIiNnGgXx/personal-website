@@ -1,0 +1,12 @@
+project_id = "portfolio-production"
+
+[auth]
+site_url = "https://mmiinnxx.github.io/personal-website/"
+additional_redirect_urls = ["http://127.0.0.1:4173/**", "http://localhost:4173/**", "https://mmiinnxx.github.io/personal-website/**"]
+
+[functions.analyze-resume]
+verify_jwt = true
+[functions.sync-ga4]
+verify_jwt = true
+[functions.sync-shopify]
+verify_jwt = true

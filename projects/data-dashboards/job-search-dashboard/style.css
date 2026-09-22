@@ -11,3 +11,4 @@ dialog{border:0;border-radius:8px;box-shadow:0 24px 90px #14263133;width:min(620
 .drawer{max-width:100vw;background:#fff}.job p.overdue,.task-date.overdue{color:var(--red)}.job h3 button{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.job-top{align-items:flex-start}.job-top>div:last-child{flex:1}.job .role-name{min-height:38px}
 @media(max-width:760px){.job-actions .icon-button{width:36px;height:36px;min-height:36px}.job-actions{gap:5px}}
 @media(prefers-reduced-motion:no-preference){button,a{transition:background .15s,box-shadow .15s}.job{transition:border-color .15s,box-shadow .15s}dialog[open]{animation:appear .16s ease-out}@keyframes appear{from{transform:translateY(6px)}to{transform:none}}}
+.pagehead>div:first-child{display:grid;gap:5px}

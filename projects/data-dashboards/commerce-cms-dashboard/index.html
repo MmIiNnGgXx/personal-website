@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>商品运营后台</title>
+    <link rel="stylesheet" href="../../shared/cloud.css"><link rel="stylesheet" href="upgrade.css"><link rel="stylesheet" href="real-data.css"><script src="config.js" defer></script><script src="../../shared/cloud.js" defer></script>
     <style>
       :root {
         --bg: #f6f7f9;
@@ -99,6 +100,7 @@
       <header>
         <div>
           <h1>商品运营后台<span class="subtitle">Commerce Admin</span></h1>
+          <div class="cloud-status" data-cloud-status></div>
           
         </div>
         <div class="actions">
@@ -108,7 +110,7 @@
             <option value="待发货">待发货</option>
             <option value="需审核">需审核</option>
           </select>
-          <button id="seed">重置示例数据</button>
+          <button id="seed">同步 Shopify</button>
         </div>
       </header>
 
@@ -121,7 +123,7 @@
 
       <main class="layout">
         <aside class="panel">
-          <h2>新增商品</h2>
+          <h2>Shopify 只读连接</h2><p class="integration-copy">登录后同步真实商品、库存、订单和客户。此页面不会修改你的商店。</p>
           <form id="productForm">
             <label>商品名称 <input id="name" required value="日用帆布袋" /></label>
             <label>商品分类 <input id="category" required value="箱包" /></label>
@@ -132,6 +134,7 @@
         </aside>
 
         <section class="panel">
+          <div class="commerce-tools"><input id="commerceSearch" type="search" placeholder="搜索商品、订单或客户" aria-label="搜索当前业务数据"><span id="resultHint"></span></div>
           <div class="tabs" aria-label="业务视图">
             <button class="tab active" data-view="products">商品</button>
             <button class="tab" data-view="orders">订单</button>
@@ -148,29 +151,10 @@
     </div>
 
     <script>
-      const seedProducts = [
-        ["阅读台灯", "家居", 48, 12],
-        ["工作椅", "家具", 189, 5],
-        ["帆布双肩包", "箱包", 82, 31],
-        ["笔记本套装", "文具", 18, 64],
-        ["陶瓷杯", "厨具", 22, 3],
-        ["无线充电支架", "数码", 54, 7]
-      ];
-      const orders = [
-        ["#1042", "陈晓", "$248", "已支付"],
-        ["#1041", "王磊", "$68", "待发货"],
-        ["#1040", "林悦", "$411", "需审核"],
-        ["#1039", "徐宁", "$126", "已支付"],
-        ["#1038", "周芸", "$42", "待发货"]
-      ];
-      const customers = [
-        ["陈晓", "3 笔订单", "$620", "高价值客户"],
-        ["王磊", "1 笔订单", "$68", "新客户"],
-        ["林悦", "6 笔订单", "$1,420", "需审核"],
-        ["徐宁", "2 笔订单", "$318", "复购客户"]
-      ];
-      let products;
-      try { products = JSON.parse(localStorage.getItem("cms-products") || "null") || structuredClone(seedProducts); if(!Array.isArray(products)) throw Error(); } catch { products = structuredClone(seedProducts); }
+      const seedProducts = [];
+      const orders = [];
+      const customers = [];
+      let products = [];
       const escape = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
       let view = "products";
 
@@ -226,12 +210,7 @@
         view = "orders";
         render();
       });
-      document.querySelector("#seed").addEventListener("click", () => {
-        if(!confirm("重置会清除你新增的商品，是否继续？")) return;
-        products = structuredClone(seedProducts);
-        localStorage.setItem("cms-products", JSON.stringify(products));
-        render();
-      });
+      document.querySelector("#seed").addEventListener("click", () => {});
       document.querySelectorAll(".tab").forEach((tab) => {
         tab.addEventListener("click", () => {
           view = tab.dataset.view;
@@ -240,6 +219,6 @@
       });
 
       render();
-    </script>
+    </script><script src="real-data.js"></script>
   </body>
 </html>

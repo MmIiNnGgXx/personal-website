@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>产品数据分析</title>
+    <link rel="stylesheet" href="../../shared/cloud.css"><link rel="stylesheet" href="upgrade.css"><link rel="stylesheet" href="real-data.css"><script src="config.js" defer></script><script src="../../shared/cloud.js" defer></script>
     <style>
       :root {
         --bg: #f6f7f9;
@@ -98,7 +99,8 @@
 <nav class="workspace-nav" aria-label="作品导航"><a href="../../../">徐铭杰 / 作品集</a><a href="../../ai/ai-resume-reviewer/">简历诊断</a><a href="../job-search-dashboard/">求职管理</a><a href="../product-analytics-dashboard/" aria-current="page">数据分析</a><a href="../commerce-cms-dashboard/">商品运营</a></nav>
       <header>
         <div>
-          <h1>产品数据分析<span class="subtitle">Product Analytics · 示例数据</span></h1>
+          <h1>产品数据分析<span class="subtitle">Product Analytics · GA4 真实数据</span></h1>
+          <div class="cloud-status" data-cloud-status></div>
           
         </div>
         <div class="toolbar" aria-label="数据筛选">
@@ -112,7 +114,9 @@
             <option>近 7 天</option>
             <option>本季度</option>
           </select>
+          <select id="compareSegment" aria-label="对比分群"><option value="">不对比</option><option value="新用户">对比新用户</option><option value="回访用户">对比回访用户</option></select>
           <button id="refresh">刷新数据</button>
+          <button id="saveView" class="secondary" type="button">保存视图</button><button id="snapshot" class="secondary" type="button">保存快照</button>
         </div>
       </header>
 
@@ -145,7 +149,7 @@
       </section>
 
       <section class="panel">
-        <h2>产品事件明细</h2>
+        <div class="section-tools"><h2>产品事件明细</h2><input id="eventSearch" type="search" placeholder="筛选事件" aria-label="筛选事件"></div>
         <div class="table-wrap">
           <table>
             <thead>
@@ -158,12 +162,7 @@
     </div>
 
     <script>
-      const records = Array.from({length:90}, (_,day) => ["新用户","回访用户"].map((segment,i) => {
-        const visits = 100 + ((day * 17 + i * 43) % 120);
-        const signups = Math.round(visits * (i ? .08 : .16));
-        const activated = Math.round(signups * (i ? .65 : .48));
-        return {day,segment,visits,signups,activated,invites:Math.round(activated*.4),paid:Math.round(activated*.2)};
-      })).flat();
+      const records = [];
       function render() {
         const group = document.getElementById("segment").value;
         const days = [30,7,90][document.getElementById("range").selectedIndex];
@@ -188,6 +187,6 @@
       ["segment","range"].forEach(id => document.getElementById(id).addEventListener("change",render));
       document.getElementById("refresh").addEventListener("click",render);
       render();
-    </script>
+    </script><script src="upgrade.js"></script><script src="real-data.js"></script>
   </body>
 </html>

@@ -1,0 +1,1 @@
+window.SUPABASE_CONFIG={project:"resume-reviewer",url:"https://YOUR_PROJECT.supabase.co",anonKey:"YOUR_ANON_KEY"};
