@@ -1,0 +1,8 @@
+.detour/
+projects/tools/detour/private-*.json
+
+# 本地密钥配置(模板见同目录 config.example.js)
+**/config.js
+
+# Supabase CLI 临时文件
+supabase/.temp/
