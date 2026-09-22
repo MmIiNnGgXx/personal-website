@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="弯路地图 Detour：把 Git 与 AI 编程会话中的失败尝试、方向调整和验证证据变成可复用的防错规则。">
+  <title>弯路地图 Detour · AI 开发复盘工具</title>
+  <link rel="stylesheet" href="style.css">
+  <style>.mobile-timeline{display:none}@media(max-width:700px){.mobile-timeline{display:grid}}</style>
+  <script src="report.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#map">跳到决策地图</a>
+  <header class="topbar">
+    <a class="brand" href="../../../"><span class="brand-mark">D</span><span>弯路地图<small>Detour</small></span></a>
+    <nav aria-label="页面导航"><a href="#map">决策地图</a><a href="#lessons">防错规则</a><a href="#about">工作方式</a></nav>
+    <button class="plain" id="mode" type="button" aria-pressed="false">公开预览</button>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="title">
+      <div>
+        <p class="eyebrow">LOCAL-FIRST · HUMAN-APPROVED</p>
+        <h1 id="title">代码会留下提交，<br><em>弯路也应该留下证据。</em></h1>
+        <p class="lead">Detour 从 Git 与 AI 编程会话中找出失败、回退和方向调整。它不评价你写了多少代码，只帮助你看清：哪里走偏、什么推翻了假设、下次怎样避免。</p>
+        <div class="hero-actions"><a class="button primary" href="#map">查看真实复盘</a><button class="button" id="import-report" type="button">导入扫描结果</button><input id="report-file" type="file" accept=".js,.json,application/json" hidden><button class="button" id="export-md" type="button">导出 Markdown</button><button class="button" id="export-json" type="button">导出 JSON</button></div>
+      </div>
+      <aside class="case-summary" aria-label="案例摘要">
+        <p>当前案例</p><h2 id="case-title"></h2><dl><div><dt>时间</dt><dd id="period"></dd></div><div><dt>方向调整</dt><dd id="pivot-count"></dd></div><div><dt>验证状态</dt><dd><span class="status verified">人工复核</span></dd></div></dl><p id="case-summary"></p>
+      </aside>
+    </section>
+
+    <section class="workspace" id="map" aria-labelledby="map-title">
+      <header class="section-head"><div><p class="eyebrow">DECISION MAP</p><h2 id="map-title">一次产品方向如何被证据改变</h2></div><div class="zoom" aria-label="地图缩放"><button type="button" id="zoom-out" aria-label="缩小">−</button><output id="zoom-value">100%</output><button type="button" id="zoom-in" aria-label="放大">＋</button></div></header>
+      <div class="workgrid">
+        <aside class="filters" aria-label="阶段筛选"><h3>阶段</h3><button class="filter active" data-stage="全部" type="button"><span>全部节点</span><b id="all-count"></b></button><button class="filter" data-stage="探索" type="button"><span><i class="dot explore"></i>探索</span><b></b></button><button class="filter" data-stage="实现" type="button"><span><i class="dot build"></i>实现</span><b></b></button><button class="filter" data-stage="验证" type="button"><span><i class="dot verify"></i>验证</span><b></b></button><button class="filter" data-stage="转向" type="button"><span><i class="dot pivot"></i>转向</span><b></b></button><div class="legend"><span><i class="line kept"></i>保留路径</span><span><i class="line dropped"></i>放弃路径</span></div></aside>
+        <div class="map-panel"><div class="map-scroll"><svg id="decision-map" role="img" aria-labelledby="map-svg-title map-svg-desc" viewBox="0 0 960 510"><title id="map-svg-title">OfferPilot 项目弯路地图</title><desc id="map-svg-desc">按时间展示八个产品决策节点，实线为保留路径，虚线为被放弃路径。</desc></svg></div><p class="map-help">点击节点查看当时的假设、证据与教训。虚线表示后来被放弃或推翻的路径。</p></div>
+        <aside class="evidence" id="evidence" aria-live="polite"><div class="evidence-empty"><span>选择一个节点</span><p>这里会显示当时的目标、假设、结果和证据。</p></div></aside>
+      </div>
+    </section>
+
+    <section class="lessons" id="lessons" aria-labelledby="lessons-title"><header class="section-head"><div><p class="eyebrow">PREFLIGHT RULES</p><h2 id="lessons-title">弯路沉淀成下一次出发前的检查</h2></div><p>规则必须能回到具体决策节点，不接受没有来源的“最佳实践”。</p></header><ol id="lesson-list"></ol></section>
+
+    <section class="about" id="about" aria-labelledby="about-title"><div><p class="eyebrow">HOW IT WORKS</p><h2 id="about-title">扫描提出候选，人决定什么是真相</h2></div><ol><li><b>01</b><span><strong>本地扫描</strong>读取 Git 与明确选择的 JSONL，不上传源码。</span></li><li><b>02</b><span><strong>规则发现</strong>识别失败命令、回退、否定和方向调整。</span></li><li><b>03</b><span><strong>人工复核</strong>修改结论并逐条批准公开内容。</span></li><li><b>04</b><span><strong>静态发布</strong>二次脱敏后生成可部署报告。</span></li></ol></section>
+  </main>
+
+  <dialog id="review-dialog"><form method="dialog"><header><div><p class="eyebrow">LOCAL REVIEW</p><h2>复核决策节点</h2></div><button class="icon-button" value="cancel" aria-label="关闭">×</button></header><label>标题<input id="review-title" maxlength="80"></label><label>为什么改变<textarea id="review-reason" rows="4"></textarea></label><label>沉淀的规则<textarea id="review-lesson" rows="3"></textarea></label><label class="check"><input type="checkbox" id="review-approved">批准进入公开报告</label><footer><button class="button" value="cancel">取消</button><button class="button primary" id="save-review" value="default">保存到本机</button></footer></form></dialog>
+
+  <footer class="footer"><span>Detour · 数据留在本机</span><span>真实失败，比虚构成功更有价值。</span></footer>
+</body>
+</html>
