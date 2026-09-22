@@ -79,18 +79,6 @@ personal-website/
 |---|---|---|
 | **AI 四子棋** | 单文件、零依赖网页小游戏;Minimax + Alpha-Beta 剪枝 AI,三档难度,含实时局势分析面板 | [打开](projects/games/ai-connect4/) |
 
-## 本地预览
-
-零依赖,任一静态服务器即可:
-
-```bash
-python -m http.server 8080
-# 或
-npx serve .
-```
-
-然后打开 <http://127.0.0.1:8080/>。
-
 ## 技术
 
 - 纯 HTML / CSS / JavaScript，无构建步骤、无前端框架

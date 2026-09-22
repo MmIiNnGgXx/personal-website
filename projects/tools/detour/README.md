@@ -4,9 +4,11 @@
 
 ## 本地运行
 
+只服务 detour 目录本身、仅监听本机(避免把仓库根目录和 `.detour/` 私有数据暴露到局域网):
+
 ```powershell
-python -m http.server 8080
-# 打开 http://127.0.0.1:8080/projects/tools/detour/
+python -m http.server 8080 --bind 127.0.0.1 --directory projects/tools/detour
+# 打开 http://127.0.0.1:8080/
 ```
 
 ## 扫描当前仓库
