@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="徐铭杰的产品型前端与 AI 应用作品集，展示简历分析、求职看板、产品数据分析和后台系统设计。">
-    <title>徐铭杰 | 前端开发与 AI 应用作品集</title>
+    <meta name="description" content="徐铭杰的产品型前端与 AI 应用作品集，重点展示弯路地图 Detour 和 AI 四子棋。">
+    <title>徐铭杰 · 产品型前端与 AI 应用作品集</title>
+    <!-- 旧版主页(含 5 个项目卡片)已于整理时移除,可从 git 历史找回 -->
     <style>
+        /* ============ 设计变量 ============ */
         :root {
             color-scheme: light;
-            --bg: #f7f7f4;
-            --panel: #ffffff;
-            --text: #1f2933;
-            --muted: #667085;
-            --line: #deded7;
-            --accent: #2563eb;
-            --accent-soft: #e7efff;
-            --ok: #0f766e;
-            --warn: #b45309;
-            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            --bg: #f4f6f7;
+            --text: #202629;
+            --ink: #202629;
+            --muted: #596469;
+            --line: #dde3e5;
+            --accent: #087f75;
+            font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
         }
 
+        /* ============ 基础 ============ */
         * {
             box-sizing: border-box;
         }
@@ -28,412 +28,301 @@
             margin: 0;
             background: var(--bg);
             color: var(--text);
+            font-size: 14px;
+            line-height: 1.6;
         }
 
         a {
             color: inherit;
         }
 
-        .shell {
-            width: min(1120px, calc(100% - 32px));
-            margin: 0 auto;
+        /* ============ 页面外壳与顶栏 ============ */
+        .portfolio-shell {
+            width: min(1180px, calc(100% - 40px));
+            margin: auto;
         }
 
-        header {
+        .portfolio-head {
+            min-height: 72px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 24px;
-            padding: 28px 0;
             border-bottom: 1px solid var(--line);
         }
 
-        .brand {
+        .portfolio-brand {
             display: grid;
-            gap: 4px;
+            text-decoration: none;
+            font-weight: 800;
         }
 
-        .brand strong {
-            font-size: 18px;
-        }
-
-        .brand span,
-        nav {
+        .portfolio-brand small {
             color: var(--muted);
-            font-size: 14px;
+            font-weight: 500;
         }
 
-        nav {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .hero {
+        /* ============ Hero ============ */
+        .portfolio-hero {
             display: grid;
-            grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
-            gap: 32px;
-            padding: 64px 0 40px;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 72px;
             align-items: end;
+            padding: 92px 0 70px;
         }
 
-        h1 {
-            max-width: 760px;
+        .portfolio-eyebrow {
+            margin: 0 0 14px;
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+        }
+
+        .portfolio-hero h1 {
             margin: 0;
-            font-size: clamp(40px, 7vw, 78px);
+            font-size: clamp(48px, 7vw, 88px);
             line-height: 0.96;
-            letter-spacing: 0;
+            letter-spacing: -0.055em;
         }
 
-        .lead {
-            max-width: 660px;
-            margin: 24px 0 0;
+        .portfolio-hero h1 em {
+            display: block;
+            color: #e76f2e;
+            font-style: normal;
+        }
+
+        .portfolio-lead {
+            max-width: 630px;
+            margin: 26px 0 0;
             color: var(--muted);
-            font-size: 18px;
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        .portfolio-note {
+            padding: 22px;
+            border-top: 4px solid #e76f2e;
+            background: #fff;
+            color: var(--muted);
             line-height: 1.7;
         }
 
-        .status {
-            display: grid;
-            gap: 12px;
-            padding: 20px;
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 8px;
+        .portfolio-note strong {
+            display: block;
+            margin-bottom: 9px;
+            color: var(--ink);
+            font-size: 18px;
         }
 
-        .status-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 16px;
-            font-size: 14px;
-        }
-
-        .status-row span {
-            color: var(--muted);
-        }
-
-        .actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 28px;
-        }
-
-        .button {
-            display: inline-flex;
-            min-height: 42px;
-            align-items: center;
-            justify-content: center;
-            padding: 0 16px;
-            border-radius: 6px;
-            border: 1px solid var(--line);
-            background: var(--panel);
-            text-decoration: none;
-            font-weight: 650;
-        }
-
-        .button.primary {
-            border-color: var(--accent);
-            background: var(--accent);
-            color: #ffffff;
-        }
-
-        section {
-            padding: 40px 0;
-        }
-
-        .section-head {
-            display: flex;
-            align-items: end;
-            justify-content: space-between;
-            gap: 24px;
-            margin-bottom: 18px;
-        }
-
-        h2 {
-            margin: 0;
-            font-size: 28px;
-            letter-spacing: 0;
-        }
-
-        .section-head p {
-            max-width: 520px;
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.6;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 14px;
-        }
-
-        .project {
-            min-height: 260px;
-            display: grid;
-            align-content: space-between;
-            gap: 20px;
-            padding: 20px;
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 8px;
-        }
-
-        .project h3 {
-            margin: 0 0 10px;
-            font-size: 19px;
-        }
-
-        .project p {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.6;
-        }
-
-        .project-link {
-            display: inline-flex;
-            margin-top: 14px;
-            color: var(--accent);
-            font-weight: 700;
-            text-decoration: none;
-        }
-
-        .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .tag {
-            padding: 5px 8px;
-            border-radius: 999px;
-            background: var(--accent-soft);
-            color: #174ea6;
-            font-size: 12px;
-            font-weight: 650;
-        }
-
-        .tag.todo {
-            background: #fff7ed;
-            color: var(--warn);
-        }
-
-        .timeline {
-            display: grid;
+        /* ============ 精选项目 ============ */
+        .portfolio-projects {
+            padding: 56px 0 80px;
             border-top: 1px solid var(--line);
         }
 
-        .step {
+        .portfolio-section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .portfolio-section-head h2 {
+            margin: 0;
+            font-size: 34px;
+        }
+
+        .portfolio-section-head p {
+            max-width: 480px;
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .portfolio-grid {
             display: grid;
-            grid-template-columns: 120px minmax(0, 1fr);
-            gap: 20px;
-            padding: 18px 0;
+            grid-template-columns: 1.55fr 0.65fr;
+            gap: 18px;
+        }
+
+        .portfolio-project {
+            display: grid;
+            min-width: 0;
+            background: #fff;
+            border: 1px solid var(--line);
+            text-decoration: none;
+            transition: transform 0.18s, box-shadow 0.18s;
+        }
+
+        .portfolio-project:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 48px rgba(28, 38, 34, 0.08);
+        }
+
+        .portfolio-project img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            background: #e7e4da;
             border-bottom: 1px solid var(--line);
         }
 
-        .step strong {
-            color: var(--ok);
+        .portfolio-body {
+            padding: 24px;
         }
 
-        .step p {
+        .portfolio-project h3 {
+            margin: 0 0 10px;
+            font-size: 25px;
+        }
+
+        .portfolio-project p {
             margin: 0;
             color: var(--muted);
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
-        footer {
+        .portfolio-tags {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+        .portfolio-tag {
+            padding: 5px 8px;
+            background: #e4f1eb;
+            color: var(--accent);
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 750;
+        }
+
+        .portfolio-secondary h3 {
+            font-size: 20px;
+        }
+
+        /* ============ 归档说明与页脚 ============ */
+        .portfolio-archive {
+            padding: 32px 0;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .portfolio-archive strong {
+            color: var(--ink);
+        }
+
+        .portfolio-footer {
             display: flex;
             justify-content: space-between;
             gap: 20px;
-            flex-wrap: wrap;
-            padding: 36px 0;
+            padding: 30px 0;
             border-top: 1px solid var(--line);
             color: var(--muted);
-            font-size: 14px;
+            font-size: 12px;
         }
 
-        @media (max-width: 860px) {
-            header,
-            .section-head,
-            footer {
+        /* ============ 响应式 ============ */
+        @media (max-width: 800px) {
+            .portfolio-head,
+            .portfolio-footer,
+            .portfolio-section-head {
                 align-items: flex-start;
                 flex-direction: column;
+                padding-block: 18px;
             }
 
-            .hero,
-            .grid {
+            .portfolio-hero,
+            .portfolio-grid {
                 grid-template-columns: 1fr;
             }
 
-            .hero {
-                padding-top: 40px;
+            .portfolio-hero {
+                padding: 54px 0;
+                gap: 32px;
             }
 
-            .step {
-                grid-template-columns: 1fr;
-                gap: 8px;
+            .portfolio-hero h1 {
+                font-size: 48px;
+            }
+
+            .portfolio-body {
+                padding: 20px;
             }
         }
-    .hero { display:block; padding:32px 0; } .hero h1 { font-size:36px; } .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .project { min-height:200px; } @media(max-width:700px){ .grid{grid-template-columns:1fr;} }
-
-      :root { --bg:#f4f6f7; --text:#202629; --ink:#202629; --muted:#596469; --line:#dde3e5; --accent:#087f75; --blue:#087f75; --accent-soft:#e6f3f0; font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
-      body { font-size:14px; line-height:1.6; }
-      .shell { width:min(1440px,calc(100% - 64px)); }
-      header { padding:24px 0; align-items:center; gap:20px; }
-      h1 { font-size:28px; line-height:1.4; overflow-wrap:anywhere; }
-      h2 { font-size:17px; line-height:1.5; }
-      h3 { line-height:1.5; }
-      .subtitle { display:block; color:var(--muted); font-size:12px; font-weight:400; margin-top:4px; }
-      .workspace-nav { display:flex; gap:24px; flex-wrap:wrap; padding:16px 0; border-bottom:1px solid var(--line); }
-      .workspace-nav a { color:var(--muted); text-decoration:none; font-size:13px; }
-      .workspace-nav a[aria-current="page"] { color:var(--accent); font-weight:700; }
-      .panel { border:0; border-radius:0; background:#fff; padding:24px; min-width:0; }
-      .metrics,.stats { gap:0; border-bottom:1px solid var(--line); }
-      .metrics>.card,.metric,.stat { border:0; border-radius:0; border-right:1px solid var(--line); background:transparent; padding:18px 24px; }
-      .metrics>:last-child,.stats>:last-child { border-right:0; }
-      .metric strong,.stat strong,.card strong { font-variant-numeric:tabular-nums; }
-      .grid,.layout,main { min-width:0; }
-      input,select,textarea { min-width:0; font-weight:400; }
-      button,.button { font-weight:600; transition:background .15s; }
-      button:hover,.button:hover { filter:brightness(.94); }
-      button:disabled { opacity:.45; cursor:not-allowed; }
-      :focus-visible { outline:3px solid #087f75; outline-offset:3px; }
-      th { background:#f5f7f8; white-space:nowrap; text-transform:none; }
-      td { overflow-wrap:anywhere; }
-      tbody tr:hover { background:#f5faf9; }
-      .badge,.chip,.tag { border-radius:4px; }
-      .ghost,.move button { background:#e6f3f0; color:#086b62; }
-      .bar { border-radius:3px; }
-      .area { fill:#e6f3f0; }
-      .table-wrap { max-width:100%; }
-      @media(max-width:980px) { .shell { width:calc(100% - 32px); } .metrics,.stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-      @media(max-width:560px) { h1 { font-size:23px; } header { padding:18px 0; } .panel { padding:16px; } .workspace-nav { gap:12px; } .metrics>.card,.metric,.stat { padding:14px 10px; } .metric strong,.stat strong,.card strong { font-size:25px; } }
-      @media(prefers-reduced-motion:reduce) { * { transition:none!important; } }
-      .project { padding:0; overflow:hidden; gap:0; }
-      .project h3,.project p,.project .project-link { margin-left:20px; margin-right:20px; }
-      .project h3 { margin-top:18px; }
-      .project .tags { padding:18px 20px 20px; }
-      .project-preview { display:block; width:100%; height:auto; aspect-ratio:3/2; object-fit:contain; background:#f4f6f7; border-bottom:1px solid var(--line); }
-      header { justify-content:space-between; }
-      @media(max-width:860px) { header { align-items:flex-start; } }
     </style>
 </head>
 <body>
-    <div class="shell">
-        <header>
-            <div class="brand">
-                <strong>徐铭杰</strong>
-                <span>前端开发 · 产品设计 · AI 应用</span>
-            </div>
+    <div class="portfolio-shell">
+        <header class="portfolio-head">
+            <a class="portfolio-brand" href="./">徐铭杰<small>产品型前端 · 数据产品 · AI 应用</small></a>
             <nav aria-label="主导航">
-                <a href="#projects">项目作品</a>
-                
+                <a href="#selected-projects">项目</a>
                 <a href="https://github.com/MmIiNnGgXx">GitHub</a>
             </nav>
         </header>
 
         <main>
-            <section class="hero">
+            <section class="portfolio-hero">
                 <div>
-                    <h1>徐铭杰<span class="subtitle">前端开发 · 产品界面 · AI 应用</span></h1>
-                    
-                    <div class="actions">
-                        <a class="button primary" href="#projects">查看项目</a>
-                        <a class="button" href="https://github.com/MmIiNnGgXx/personal-website">查看源码</a>
-                    </div>
+                    <p class="portfolio-eyebrow">PRODUCT ENGINEERING PORTFOLIO</p>
+                    <h1>少做空壳，<em>多留证据。</em></h1>
+                    <p class="portfolio-lead">我关注复杂界面、数据与 AI 如何成为真正可验证的产品。这里不按功能数量排列项目，而是展示问题、取舍、失败和最后通过的验证。</p>
                 </div>
-
-                
+                <aside class="portfolio-note">
+                    <strong>当前原则</strong>
+                    一个完整、可直接体验的旗舰项目，胜过四个依赖私有数据和第三方账号的半成品。
+                </aside>
             </section>
 
-            <section id="projects">
-                <div class="section-head"><h2>项目作品 <span class="subtitle">Selected work</span></h2></div>
-
-                <div class="grid">
-                    <article class="project">
-                        <div>
-                            <img class="project-preview" src="assets/screenshots/ai-resume-reviewer.jpg" alt="简历诊断页面，包含输入区、关键词匹配分和能力维度" width="1440" height="960">
-                            <h3>简历与岗位诊断</h3>
-                            <p>对照岗位要求检查关键词覆盖，查看能力缺口、项目表达模板与诊断报告。</p>
-                            <a class="project-link" href="projects/ai/ai-resume-reviewer/">打开项目</a>
+            <section class="portfolio-projects" id="selected-projects">
+                <header class="portfolio-section-head">
+                    <h2>精选项目</h2>
+                    <p>所有对外展示的能力，都应当有可检查的实现或明确的边界说明。</p>
+                </header>
+                <div class="portfolio-grid">
+                    <a class="portfolio-project" href="projects/tools/detour/">
+                        <img src="assets/screenshots/detour.jpg" alt="弯路地图的地铁线路式决策复盘界面" width="1440" height="900">
+                        <div class="portfolio-body">
+                            <p class="portfolio-eyebrow">FLAGSHIP · LOCAL-FIRST</p>
+                            <h3>弯路地图 Detour</h3>
+                            <p>读取 Git 与明确选择的 AI 编程会话，找出失败、回退和方向调整；经人工复核后，把弯路变成下一项目的防错规则。</p>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">Git 日志解析</span>
+                                <span class="portfolio-tag">隐私脱敏</span>
+                                <span class="portfolio-tag">SVG 决策地图</span>
+                                <span class="portfolio-tag">静态导出</span>
+                            </div>
                         </div>
-                        <div class="tags">
-                            <span class="tag">简历诊断</span>
-                            <span class="tag">岗位匹配</span>
-                            <span class="tag">可体验</span>
-                        </div>
-                    </article>
-
-                    <article class="project">
-                        <div>
-                            <img class="project-preview" src="assets/screenshots/job-search-dashboard.jpg" alt="求职工作台，包含职位表单、搜索和五阶段看板" width="1440" height="960">
-                            <h3>求职管理工作台</h3>
-                            <p>集中管理投递阶段与跟进备注，支持职位搜索、筛选、编辑和本地保存。</p>
-                            <a class="project-link" href="projects/data-dashboards/job-search-dashboard/">打开项目</a>
-                        </div>
-                        <div class="tags">
-                            <span class="tag">阶段管理</span>
-                            <span class="tag">工作台</span>
-                            <span class="tag">可体验</span>
-                        </div>
-                    </article>
-
-                    <article class="project">
-                        <div>
-                            <img class="project-preview" src="assets/screenshots/product-analytics-dashboard.jpg" alt="产品数据页面，包含分群筛选、激活趋势和转化漏斗" width="1440" height="960" loading="lazy">
-                            <h3>产品数据分析</h3>
-                            <p>按用户分群与时间范围查看注册、激活、付费漏斗和事件汇总。</p>
-                            <a class="project-link" href="projects/data-dashboards/product-analytics-dashboard/">打开项目</a>
-                        </div>
-                        <div class="tags">
-                            <span class="tag">数据分析</span>
-                            <span class="tag">可视化</span>
-                            <span class="tag">可体验</span>
-                        </div>
-                    </article>
-
-                    <article class="project">
-                        <div>
-                            <img class="project-preview" src="assets/screenshots/commerce-cms-dashboard.jpg" alt="商品运营页面，包含经营指标、商品表单和业务表格" width="1440" height="960" loading="lazy">
-                            <h3>商品运营后台</h3>
-                            <p>管理商品资料和库存，筛选订单状态，查看客户消费与经营指标。</p>
-                            <a class="project-link" href="projects/data-dashboards/commerce-cms-dashboard/">打开项目</a>
-                        </div>
-                        <div class="tags">
-                            <span class="tag">运营管理</span>
-                            <span class="tag">表格表单</span>
-                            <span class="tag">可体验</span>
-                        </div>
-                    </article>
-
-                    <article class="project">
-                        <div>
-                            <img class="project-preview" src="assets/screenshots/ai-connect4.png" alt="AI 四子棋，含棋盘、难度分级与实时局势分析面板" width="1440" height="960" loading="lazy">
+                    </a>
+                    <a class="portfolio-project portfolio-secondary" href="projects/games/ai-connect4/">
+                        <img src="assets/screenshots/ai-connect4.png" alt="AI 四子棋棋盘与局势分析" width="1440" height="960">
+                        <div class="portfolio-body">
+                            <p class="portfolio-eyebrow">ALGORITHM</p>
                             <h3>AI 四子棋</h3>
-                            <p>单文件、零依赖的网页小游戏。Minimax + Alpha-Beta 剪枝 AI，含三档难度与实时局势分析面板。</p>
-                            <a class="project-link" href="projects/games/ai-connect4/">打开项目</a>
+                            <p>零依赖浏览器游戏。Minimax、Alpha-Beta 剪枝、三档难度与实时局势分析。</p>
+                            <div class="portfolio-tags">
+                                <span class="portfolio-tag">搜索算法</span>
+                                <span class="portfolio-tag">可直接体验</span>
+                            </div>
                         </div>
-                        <div class="tags">
-                            <span class="tag">游戏设计</span>
-                            <span class="tag">搜索算法</span>
-                            <span class="tag">可体验</span>
-                        </div>
-                    </article>
-
-                    
-
-                    
+                    </a>
                 </div>
             </section>
 
-            
+            <section class="portfolio-archive">
+                <strong>关于旧项目</strong><br>
+                简历诊断、求职管理、GA4 分析和 Shopify 后台已从公开项目入口下线。代码保留用于复盘，但在完成真实端到端验收前不再宣称“已接入”或“真实可用”。
+            </section>
         </main>
 
-        <footer>
-            <span>作者： 徐铭杰</span>
-            <span>前端工程 · 产品界面 · AI 应用</span>
+        <footer class="portfolio-footer">
+            <span>徐铭杰 · 2026</span>
+            <span>真实失败，比虚构成功更有价值。</span>
         </footer>
     </div>
 </body>
