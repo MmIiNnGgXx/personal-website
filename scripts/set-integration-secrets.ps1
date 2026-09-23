@@ -1,4 +1,7 @@
-param([string]$ProjectRef = "dnyzhfwqckrzragvrquv")
+param(
+  [Parameter(Mandatory = $true)]
+  [string]$ProjectRef
+)
 $ErrorActionPreference = "Stop"
 function Read-Secret([string]$Prompt) {
   $secure = Read-Host $Prompt -AsSecureString
