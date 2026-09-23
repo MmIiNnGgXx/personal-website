@@ -1,51 +1,50 @@
-# 徐铭杰 · 产品型前端与 AI 应用作品集
+# 徐铭杰 · 前端与 AI 应用作品集
 
-> 公开主项目为 **弯路地图 Detour**。仓库中另保留部分历史实验代码，仅作本地复盘，不作为公开展示项目。
+> 少做空壳，多留证据。这里展示的是**真实可运行、可以直接体验**的作品，
+> 而不是一堆「已接入某某服务」的空头支票。
 
-## 旗舰项目：弯路地图 Detour
+## 🎮 主推作品：AI 四子棋
 
-Detour 读取 Git 历史和用户明确选择的 Codex JSONL，提出可能的失败、回退与方向调整节点；所有结论和公开内容仍由人确认。
+### 这是什么
 
-- [打开交互案例](projects/tools/detour/)
-- [项目说明](projects/tools/detour/README.md)
-- [本地扫描器](tools/detour.mjs)
+一个零依赖、零构建的网页小游戏：在浏览器里和 AI 下一盘四子棋。
+没有框架、没有第三方库、没有 `npm install`——打开页面，立刻开战。
 
-```powershell
-node tools/detour.mjs --scan --repo . --out .detour/review.js
-node tools/detour.test.mjs
-```
+### 为什么要做它
 
-扫描器只使用 Node.js 标准库和本机 Git，不执行目标仓库脚本、不上传源码。
+四子棋的规则简单到一句话就能讲完，背后却是经典的「对抗搜索」问题：
+每一步都要在「自己连成四个」和「堵死对手」之间做权衡，而棋盘状态
+随步数指数级爆炸——凭直觉下棋，很快就会输给会算的对手。
 
-## 其他公开作品
+这个项目就是把教科书里的 Minimax 博弈树，变成一个**真的能玩**、
+而且**能看懂 AI 在想什么**的东西。
 
-| 项目 | 说明 | 预览 |
-|---|---|---|
-| **AI 四子棋** | 单文件、零依赖网页小游戏；Minimax + Alpha-Beta 剪枝 AI，三档难度，含实时局势分析面板 | [打开](projects/games/ai-connect4/) |
+### 亮点
+
+- **三档难度，棋力差距肉眼可见**——简单档随意应对，困难档用
+  Alpha-Beta 剪枝多算几步，你会明显感觉到对手越来越难缠。
+- **实时局势分析面板**——AI 每走一步都会解释自己的判断：哪里有威胁、
+  它堵了哪条线、当前谁占优。不是黑盒，是透明的思考过程。
+- **单文件、零依赖**——双击就能玩，也可以嵌入任何页面。
+- **输赢都有解释**——每一步推理都可复现，这就是「可验证」。
+
+### 技术栈
+
+`Minimax 博弈树搜索` · `Alpha-Beta 剪枝` · `启发式局面评估` · `原生 JavaScript`
+
+### 立即体验
+
+👉 [打开 AI 四子棋](projects/games/ai-connect4/)
 
 ## 在线地址
 
-- 作品集：https://mmiinnxx.github.io/personal-website/
+- 作品集首页：<https://mmiinnxx.github.io/personal-website/>
 - 源码：<https://github.com/MmIiNnGgXx/personal-website>
 
-## 目录结构
-
-```
-personal-website/
-├── index.html                    # 精选作品集首页(旗舰 Detour + AI 四子棋)
-├── README.md
-├── assets/
-│   └── screenshots/              # 首页用到的预览图
-├── docs/                         # 设计沉淀(UI 优化与产品复盘)
-├── tools/                        # detour 本地扫描器 CLI
-└── projects/
-    ├── games/                    # 小游戏 / 交互 Demo
-    │   └── ai-connect4/
-    └── tools/                    # 弯路地图 Detour(旗舰项目)
-        └── detour/
-```
-
-## 技术
+## 技术风格
 
 - 纯 HTML / CSS / JavaScript，无构建步骤、无前端框架
-- 前端托管于 GitHub Pages
+- 托管于 GitHub Pages，开箱即用
+
+> 仓库中另保留部分历史实验代码（弯路地图 Detour、求职看板等），
+> 仅作本地复盘，不作为公开展示项目。

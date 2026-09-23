@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="徐铭杰的产品型前端与 AI 应用作品集，重点展示弯路地图 Detour 和 AI 四子棋。">
+    <meta name="description" content="徐铭杰的产品型前端与 AI 应用作品集，主推可直接体验的 AI 四子棋：Minimax + Alpha-Beta 剪枝，三档难度与实时局势分析。">
     <title>徐铭杰 · 产品型前端与 AI 应用作品集</title>
-    <!-- 旧版主页(含 5 个项目卡片)已于整理时移除,可从 git 历史找回 -->
+    <!-- 弯路地图 Detour 已从门面撤下,旧版首页可从 git 历史找回 -->
     <style>
         /* ============ 设计变量 ============ */
         :root {
@@ -115,7 +115,7 @@
             font-size: 18px;
         }
 
-        /* ============ 精选项目 ============ */
+        /* ============ 主推项目 ============ */
         .portfolio-projects {
             padding: 56px 0 80px;
             border-top: 1px solid var(--line);
@@ -143,12 +143,13 @@
 
         .portfolio-grid {
             display: grid;
-            grid-template-columns: 1.55fr 0.65fr;
+            grid-template-columns: 1fr;
             gap: 18px;
         }
 
         .portfolio-project {
             display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
             min-width: 0;
             background: #fff;
             border: 1px solid var(--line);
@@ -163,25 +164,39 @@
 
         .portfolio-project img {
             width: 100%;
-            aspect-ratio: 16/9;
+            height: 100%;
+            min-height: 400px;
             object-fit: cover;
             background: #e7e4da;
-            border-bottom: 1px solid var(--line);
+            border-right: 1px solid var(--line);
         }
 
         .portfolio-body {
-            padding: 24px;
+            padding: 36px 38px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .portfolio-project h3 {
             margin: 0 0 10px;
-            font-size: 25px;
+            font-size: 28px;
+            letter-spacing: -0.01em;
+        }
+
+        .portfolio-project h3 small {
+            display: block;
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 500;
         }
 
         .portfolio-project p {
             margin: 0;
             color: var(--muted);
-            line-height: 1.7;
+            line-height: 1.8;
+            font-size: 15px;
         }
 
         .portfolio-tags {
@@ -200,8 +215,18 @@
             font-weight: 750;
         }
 
-        .portfolio-secondary h3 {
-            font-size: 20px;
+        .portfolio-cta {
+            margin-top: 26px;
+            align-self: flex-start;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent);
+            color: #fff;
+            padding: 11px 22px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 14px;
         }
 
         /* ============ 归档说明与页脚 ============ */
@@ -237,7 +262,7 @@
             }
 
             .portfolio-hero,
-            .portfolio-grid {
+            .portfolio-project {
                 grid-template-columns: 1fr;
             }
 
@@ -250,8 +275,16 @@
                 font-size: 48px;
             }
 
+            .portfolio-project img {
+                aspect-ratio: 16/9;
+                height: auto;
+                min-height: 0;
+                border-right: 0;
+                border-bottom: 1px solid var(--line);
+            }
+
             .portfolio-body {
-                padding: 20px;
+                padding: 24px;
             }
         }
     </style>
@@ -281,42 +314,32 @@
 
             <section class="portfolio-projects" id="selected-projects">
                 <header class="portfolio-section-head">
-                    <h2>精选项目</h2>
+                    <h2>主推项目</h2>
                     <p>所有对外展示的能力，都应当有可检查的实现或明确的边界说明。</p>
                 </header>
                 <div class="portfolio-grid">
-                    <a class="portfolio-project" href="projects/tools/detour/">
-                        <img src="assets/screenshots/detour.jpg" alt="弯路地图的地铁线路式决策复盘界面" width="1440" height="900">
+                    <a class="portfolio-project" href="projects/games/ai-connect4/">
+                        <img src="assets/screenshots/ai-connect4.png" alt="AI 四子棋棋盘、三档难度与实时局势分析面板" width="1440" height="960">
                         <div class="portfolio-body">
-                            <p class="portfolio-eyebrow">FLAGSHIP · LOCAL-FIRST</p>
-                            <h3>弯路地图 Detour</h3>
-                            <p>读取 Git 与明确选择的 AI 编程会话，找出失败、回退和方向调整；经人工复核后，把弯路变成下一项目的防错规则。</p>
+                            <p class="portfolio-eyebrow">FLAGSHIP · PLAYABLE NOW</p>
+                            <h3>AI 四子棋<small>会思考的对手，看得懂的棋</small></h3>
+                            <p>零依赖浏览器小游戏。Minimax + Alpha-Beta 剪枝驱动三档难度的 AI；每走一步，它都会在局势分析面板里解释自己的判断——哪里有威胁、堵了哪条线、当前谁占优。不是黑盒，是透明的思考过程，输赢都有解释。</p>
                             <div class="portfolio-tags">
-                                <span class="portfolio-tag">Git 日志解析</span>
-                                <span class="portfolio-tag">隐私脱敏</span>
-                                <span class="portfolio-tag">SVG 决策地图</span>
-                                <span class="portfolio-tag">静态导出</span>
-                            </div>
-                        </div>
-                    </a>
-                    <a class="portfolio-project portfolio-secondary" href="projects/games/ai-connect4/">
-                        <img src="assets/screenshots/ai-connect4.png" alt="AI 四子棋棋盘与局势分析" width="1440" height="960">
-                        <div class="portfolio-body">
-                            <p class="portfolio-eyebrow">ALGORITHM</p>
-                            <h3>AI 四子棋</h3>
-                            <p>零依赖浏览器游戏。Minimax、Alpha-Beta 剪枝、三档难度与实时局势分析。</p>
-                            <div class="portfolio-tags">
-                                <span class="portfolio-tag">搜索算法</span>
+                                <span class="portfolio-tag">博弈搜索</span>
+                                <span class="portfolio-tag">Alpha-Beta 剪枝</span>
+                                <span class="portfolio-tag">局势分析</span>
+                                <span class="portfolio-tag">零依赖</span>
                                 <span class="portfolio-tag">可直接体验</span>
                             </div>
+                            <span class="portfolio-cta">▶ 立即开玩</span>
                         </div>
                     </a>
                 </div>
             </section>
 
             <section class="portfolio-archive">
-                <strong>关于旧项目</strong><br>
-                简历诊断、求职管理、GA4 分析和 Shopify 后台已从公开项目入口下线。代码保留用于复盘，但在完成真实端到端验收前不再宣称“已接入”或“真实可用”。
+                <strong>关于旧项目与实验</strong><br>
+                弯路地图 Detour、简历诊断、求职管理、GA4 分析和 Shopify 后台已从公开项目入口下线。代码保留用于复盘，但在完成真实端到端验收前不再宣称“已接入”或“真实可用”。
             </section>
         </main>
 
