@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {readTable,reconcile,totals,exportDifferences} from './core.mjs';
+const load=name=>readTable(fs.readFileSync(new URL(name,import.meta.url),'utf8'));
+const a=load('orders.csv'),b=load('ledger.csv'),result=reconcile(a,b,'订单号');
+assert.deepEqual([result.missing,result.extra,result.changed,result.same],[10,6,15,475]);
+assert.equal(result.details.length,31);
+assert.equal(totals(a).length,5);
+const left=readTable('订单号,金额,状态\nA,10.00,已付款'),right=readTable('订单号,金额,状态\nA,10,已付款');
+assert.equal(reconcile(left,right,'订单号').same,1);
+assert.throws(()=>reconcile(readTable('订单号,金额\nA,1\nA,2'),right,'订单号'),/重复/);
+assert.throws(()=>readTable('a,a\n1,2'),/重复/);
+assert.throws(()=>readTable('a,b\n"unclosed,2'),/引号/);
+assert.throws(()=>reconcile(readTable('订单号,金额\nA,NaN'),right,'订单号'),/金额/);
+assert(exportDifferences([{id:'=1+1',type:'changed',field:'金额',left:'10',right:'20'}]).includes("'=1+1"));
+console.log('PASS: simulated case, numeric equality, duplicate keys, malformed CSV, invalid amounts, safe export.');
